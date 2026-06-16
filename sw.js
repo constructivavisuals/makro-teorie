@@ -2,7 +2,7 @@
    Navigace (HTML): network-first → online vždy nejnovější verze, offline padne na cache.
    Ikony + CDN fonty: cache-first.
    Verzovaná cache: při novém nasazení zvedni číslo (makro-v1 → makro-v2). */
-const CACHE = "makro-v3";
+const CACHE = "makro-v4";
 const ASSETS = [
   "/",
   "/index.html",

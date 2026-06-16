@@ -394,6 +394,62 @@ a{color:var(--orange-d)}
   .dhero .ring{margin:0 auto}
   .dmeta{justify-content:center}
 }
+
+/* ---------- verdikt připravenosti ---------- */
+.verdict{display:inline-flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 11px;border-radius:999px;border:1px solid transparent}
+.verdict.g{background:var(--green-soft);color:var(--green-d);border-color:var(--green-line)}
+.verdict.a{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line)}
+.verdict.r{background:var(--orange-soft);color:var(--orange-d);border-color:var(--orange-line)}
+
+/* ---------- heatmapa aktivity ---------- */
+.heatwrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px}
+.heathead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.heathead .ht{font-family:"Space Grotesk";font-size:15px;font-weight:600;color:var(--ink)}
+.heat{display:grid;grid-template-rows:repeat(7,12px);grid-auto-flow:column;grid-auto-columns:12px;gap:3px;overflow-x:auto;padding-bottom:2px}
+.hc{width:12px;height:12px;border-radius:3px;background:var(--line)}
+.hc.l1{background:#CDE0E3}.hc.l2{background:#9FC4CC}.hc.l3{background:#6FA0AB}.hc.l4{background:#4E7A85}
+:root[data-theme="dark"] .hc{background:var(--line)}
+:root[data-theme="dark"] .hc.l1{background:#1E3339}
+:root[data-theme="dark"] .hc.l2{background:#2E545E}
+:root[data-theme="dark"] .hc.l3{background:#43838F}
+:root[data-theme="dark"] .hc.l4{background:#74B4C2}
+.heatlegend{display:flex;align-items:center;gap:6px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-3)}
+.heatlegend .hc{width:10px;height:10px}
+
+/* ---------- odznaky ---------- */
+.achrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.achip{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 10px;font-size:12.5px;color:var(--ink-2);box-shadow:var(--shadow)}
+.achip.got{border-color:var(--orange-line);color:var(--ink)}
+.achip.locked{opacity:.45}
+.achip .ai{font-size:15px;line-height:1;filter:grayscale(1)}
+.achip.got .ai{filter:none}
+
+/* ---------- data: záloha / reset ---------- */
+.datatools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+
+/* ---------- pasti (absolutní slova) — odhalí se až po odpovědi ---------- */
+.trap{background:transparent;color:inherit;border-radius:3px;padding:0 1px}
+.stmt.ok .trap,.stmt.bad .trap{background:var(--amber-soft);box-shadow:inset 0 -2px 0 var(--amber);cursor:help}
+
+/* ---------- toasty (odznaky, cíl) ---------- */
+.toastwrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:80;max-width:330px}
+.toast{display:flex;gap:11px;align-items:flex-start;background:var(--surface);border:1px solid var(--line-2);border-left:3px solid var(--orange);border-radius:var(--radius-s);box-shadow:var(--shadow-lg);padding:13px 15px;font-size:13.5px;color:var(--ink);opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s}
+.toast.on{opacity:1;transform:none}
+.toast b{font-family:"Space Grotesk";font-weight:600}
+.toast .tsub{font-size:12px;color:var(--ink-2);margin-top:2px;line-height:1.4}
+.toast>span:first-child{font-size:21px;line-height:1.1;flex:0 0 auto}
+
+/* ---------- swipe (mobil) ---------- */
+.stmt{position:relative;touch-action:pan-y}
+.stmt.swiping{transition:none!important;cursor:grabbing;user-select:none}
+.stmt.sw-yes{border-color:var(--green)!important}
+.stmt.sw-no{border-color:var(--red)!important}
+.stmt.sw-yes::after,.stmt.sw-no::after{position:absolute;top:10px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px;letter-spacing:.07em;padding:4px 10px;border-radius:8px;color:#fff}
+.stmt.sw-yes::after{content:"ANO";right:12px;background:var(--green)}
+.stmt.sw-no::after{content:"NE";left:12px;background:var(--red)}
+@media (prefers-reduced-motion:no-preference){.stmt{transition:border-color .15s,box-shadow .15s,transform .18s cubic-bezier(.2,.7,.2,1)}}
+.swcue{display:none;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:14px}
+@media (pointer:coarse){.swcue{display:block}.keyhint{display:none}}
 </style>
 </head>
 <body>
@@ -456,8 +512,8 @@ function sidOf(topic,t){return hashStr(topic+"::"+t);}
 function loadStore(){
   try{
     const o=JSON.parse(localStorage.getItem(LS_KEY)||"null")||{};
-    return {v:2,exams:Array.isArray(o.exams)?o.exams:[],topics:o.topics||{},wrong:o.wrong||{},starred:o.starred||{},srs:o.srs||{},daily:o.daily||null};
-  }catch(e){return {v:2,exams:[],topics:{},wrong:{},starred:{},srs:{},daily:null};}
+    return {v:3,exams:Array.isArray(o.exams)?o.exams:[],topics:o.topics||{},wrong:o.wrong||{},starred:o.starred||{},srs:o.srs||{},daily:o.daily||null,activity:o.activity||{},ach:o.ach||{}};
+  }catch(e){return {v:3,exams:[],topics:{},wrong:{},starred:{},srs:{},daily:null,activity:{},ach:{}};}
 }
 let STORE=loadStore();
 function saveStore(){try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}}
@@ -465,7 +521,9 @@ function recordAnswer(topic,sid,ok){
   if(!STORE.topics[topic])STORE.topics[topic]={correct:0,total:0};
   STORE.topics[topic].total++;if(ok)STORE.topics[topic].correct++;
   if(ok)delete STORE.wrong[sid];else STORE.wrong[sid]=1;
+  bumpActivity();
 }
+function bumpActivity(){const k=dayKey();if(!STORE.activity)STORE.activity={};STORE.activity[k]=(STORE.activity[k]||0)+1;}
 function isStarred(sid){return !!STORE.starred[sid];}
 function toggleStar(sid,el){
   if(STORE.starred[sid])delete STORE.starred[sid];else STORE.starred[sid]=1;
@@ -474,7 +532,7 @@ function toggleStar(sid,el){
 }
 function resetProgress(){
   if(!confirm("Opravdu vymazat veškerý uložený pokrok (chytré opakování / SRS, statistiky, historii zkoušek, chybné i označené výroky)? Akci nelze vrátit."))return;
-  STORE={v:2,exams:[],topics:{},wrong:{},starred:{},srs:{},daily:null};
+  STORE={v:3,exams:[],topics:{},wrong:{},starred:{},srs:{},daily:null,activity:{},ach:{}};
   ensureDaily();saveStore();renderPlan();
 }
 const STAR_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.2l2.6 5.55 6.05.7-4.45 4.13 1.18 5.97L12 17.7 6.62 19.55 7.8 13.58 3.35 9.45l6.05-.7z"/></svg>';
@@ -504,18 +562,22 @@ function touchStreak(){
   STORE.daily.streak=(STORE.daily.last===y)?(STORE.daily.streak||0)+1:1;
   STORE.daily.last=t;
 }
-function srsReview(sid,ok){
+function srsReview(sid,ok,ms){
   ensureDaily();
   const now=Date.now();
   const isNew=!STORE.srs[sid];
   const s=STORE.srs[sid]||{box:1,due:now,seen:0,correct:0,lapses:0};
   s.seen++;
-  if(ok){s.correct++;s.box=Math.min(5,s.box+1);}else{s.lapses++;s.box=1;}
+  if(ok){s.correct++;s.box=Math.min(5,s.box+1);if(ms&&ms<4000)s.box=Math.min(5,s.box+1);}else{s.lapses++;s.box=1;}
   s.due=now+SRS_DAYS[s.box]*DAY_MS;
   STORE.srs[sid]=s;
   if(isNew)STORE.daily.newToday=(STORE.daily.newToday||0)+1;
   STORE.daily.done=(STORE.daily.done||0)+1;
   touchStreak();
+  if(STORE.daily.done===STORE.daily.goal&&STORE.daily.celebratedFor!==dayKey()){
+    STORE.daily.celebratedFor=dayKey();
+    try{showToast(`<span>🎯</span><div><b>Denní cíl splněn!</b><div class="tsub">${STORE.daily.goal} ${cardWord(STORE.daily.goal)} hotovo. Skvělá práce — udržuj sérii.</div></div>`);}catch(e){}
+  }
 }
 function topicMastery(topicId){
   const sids=BLOCKS.filter(b=>b.topic===topicId).flatMap(b=>b.items.map(it=>sidOf(topicId,it.t)));
@@ -537,6 +599,130 @@ function dailyQueue(){
   const goalLeft=Math.max(0,STORE.daily.goal-(STORE.daily.done||0));
   if(goalLeft>0)pool=pool.slice(0,goalLeft);
   return pool;
+}
+
+/* ============================================================
+   PŘIPRAVENOST · NEJTĚŽŠÍ · ODZNAKY · HEATMAPA · ZÁLOHA · PASTI · SWIPE
+============================================================ */
+/* skóre připravenosti na zkoušku: mastery 50 % + přesnost 30 % + pokrytí 20 % */
+function examReadiness(){
+  const items=allItems(),N=items.length;
+  const seen=items.filter(it=>STORE.srs[it.sid]).length;
+  const coverage=N?seen/N:0, mastery=overallMastery().pct/100;
+  const ex=(STORE.exams||[]).slice(0,3);
+  let acc;
+  if(ex.length)acc=ex.reduce((a,e)=>a+e.pct,0)/ex.length/100;
+  else{let c=0,t=0;for(const k in STORE.topics){c+=STORE.topics[k].correct;t+=STORE.topics[k].total;}acc=t?c/t:0;}
+  let pct=Math.max(0,Math.min(100,Math.round((0.5*mastery+0.3*acc+0.2*coverage)*100)));
+  let verdict,cls;
+  if(!seen){verdict="Zatím nezačato";cls="r";pct=0;}
+  else if(pct<40){verdict="Začínáš";cls="r";}
+  else if(pct<65){verdict="Na dobré cestě";cls="a";}
+  else if(pct<85){verdict="Skoro připraven";cls="a";}
+  else{verdict="Připraven na zkoušku";cls="g";}
+  return {pct,verdict,cls,coverage:Math.round(coverage*100),mastery:Math.round(mastery*100),acc:Math.round(acc*100),seen};
+}
+/* leech = výroky, na kterých opakovaně chybuješ */
+function leeches(){return allItems().filter(it=>{const s=STORE.srs[it.sid];return s&&s.lapses>=3&&s.box<4;});}
+
+/* odznaky */
+function sumSeen(s){let n=0;for(const k in s.srs)n+=(s.srs[k].seen||0);return n;}
+const ACHS=[
+ {id:"start",ic:"🌱",name:"První krok",desc:"Zodpovězen první výrok v učení.",test:s=>Object.keys(s.srs).length>=1},
+ {id:"c50",ic:"⚡",name:"50 opakování",desc:"Nasbíráno 50 zodpovězených karet.",test:s=>sumSeen(s)>=50},
+ {id:"c200",ic:"🚀",name:"200 opakování",desc:"Nasbíráno 200 zodpovězených karet.",test:s=>sumSeen(s)>=200},
+ {id:"topic",ic:"🎯",name:"Okruh zvládnut",desc:"Celý okruh v boxu ≥ 4.",test:s=>TOPICS.some(t=>{const m=topicMastery(t.id);return m&&m.pct===100;})},
+ {id:"streak7",ic:"📅",name:"Týden v kuse",desc:"7 dní učení v řadě.",test:s=>s.daily&&s.daily.streak>=7},
+ {id:"exam",ic:"🏅",name:"Zkouška na jistotu",desc:"Zkouška nanečisto na 70 %+.",test:s=>(s.exams||[]).some(e=>e.pct>=70)},
+ {id:"flawless",ic:"💎",name:"Bez chybičky",desc:"Zkouška nanečisto na 100 %.",test:s=>(s.exams||[]).some(e=>e.pct===100)},
+ {id:"half",ic:"📈",name:"Půlka v hlavě",desc:"Zvládnuto 50 % všech výroků.",test:s=>overallMastery().pct>=50},
+ {id:"ready",ic:"🎓",name:"Připraven",desc:"Připravenost na zkoušku 85 %+.",test:s=>examReadiness().pct>=85},
+ {id:"all",ic:"👑",name:"Mistr teorie",desc:"Zvládnuto 100 % všech výroků.",test:s=>overallMastery().pct>=100}
+];
+function checkAchievements(){
+  if(!STORE.ach)STORE.ach={};
+  const newly=[];
+  ACHS.forEach(a=>{if(!STORE.ach[a.id]&&a.test(STORE)){STORE.ach[a.id]=Date.now();newly.push(a);}});
+  if(newly.length){saveStore();newly.forEach(a=>showToast(`<span>${a.ic}</span><div><b>Odznak: ${a.name}</b><div class="tsub">${a.desc}</div></div>`));}
+  return newly;
+}
+
+/* toasty */
+function showToast(html){
+  let c=byId("toastWrap");
+  if(!c){c=document.createElement("div");c.id="toastWrap";c.className="toastwrap";document.body.appendChild(c);}
+  const el=document.createElement("div");el.className="toast";el.innerHTML=html;c.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add("on"));
+  setTimeout(()=>{el.classList.remove("on");setTimeout(()=>el.remove(),350);},3800);
+}
+
+/* heatmapa aktivity (12 týdnů) */
+function heatmapHTML(){
+  const act=STORE.activity||{},days=84;
+  const t0=new Date();t0.setHours(0,0,0,0);
+  const cells=[];let max=1;
+  for(let i=days-1;i>=0;i--){const d=new Date(t0.getTime()-i*DAY_MS);const key=d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();const v=act[key]||0;if(v>max)max=v;cells.push({key,v,d});}
+  const lvl=v=>v<=0?0:(v>=Math.max(12,max*0.7)?4:v>=Math.max(6,max*0.4)?3:v>=2?2:1);
+  const padN=(cells[0].d.getDay()+6)%7;   /* zarovnání na pondělí */
+  const pad=Array.from({length:padN},()=>'<span class="hc" style="visibility:hidden"></span>').join("");
+  const total=Object.values(act).reduce((a,b)=>a+b,0);
+  const streak=(STORE.daily&&STORE.daily.streak)||0;
+  return `<div class="heatwrap">
+    <div class="heathead"><span class="ht">Aktivita</span><span class="pmono">🔥 série ${streak} ${dayWord(streak)} · ${total} ${cardWord(total)} celkem</span></div>
+    <div class="heat">${pad}${cells.map(c=>`<span class="hc l${lvl(c.v)}" title="${c.key}: ${c.v} ${cardWord(c.v)}"></span>`).join("")}</div>
+    <div class="heatlegend" style="margin-top:10px;justify-content:flex-end">méně <span class="hc l0"></span><span class="hc l1"></span><span class="hc l2"></span><span class="hc l3"></span><span class="hc l4"></span> více</div>
+  </div>`;
+}
+
+/* záloha / obnova pokroku kódem */
+function exportProgress(){
+  try{
+    const code=btoa(unescape(encodeURIComponent(JSON.stringify(STORE))));
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(code).then(()=>showToast('<span>📋</span><div><b>Záloha zkopírována</b><div class="tsub">Vlož ji na jiném zařízení přes „Obnovit pokrok“.</div></div>')).catch(()=>window.prompt("Zkopíruj si zálohovací kód:",code));
+    else window.prompt("Zkopíruj si zálohovací kód:",code);
+  }catch(e){alert("Zálohu se nepodařilo vytvořit.");}
+}
+function importProgress(){
+  const code=window.prompt("Vlož zálohovací kód z jiného zařízení:");if(!code)return;
+  try{
+    const o=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+    if(!o||typeof o!=="object")throw 0;
+    STORE={v:3,exams:Array.isArray(o.exams)?o.exams:[],topics:o.topics||{},wrong:o.wrong||{},starred:o.starred||{},srs:o.srs||{},daily:o.daily||null,activity:o.activity||{},ach:o.ach||{}};
+    ensureDaily();saveStore();renderPlan();
+    showToast('<span>✅</span><div><b>Pokrok obnoven</b></div>');
+  }catch(e){alert("Neplatný kód zálohy.");}
+}
+
+/* zvýraznění absolutních slov (past) — viditelné až po odhalení odpovědi */
+const TRAP_RE=/(?<![\p{L}])(vždy|vždycky|nikdy|pouze|jediný|jediná|jediné|jedinou|výhradně|naprosto)(?![\p{L}])/giu;
+function markTraps(s){try{return s.replace(TRAP_RE,'<mark class="trap" title="absolutní slovo — u výroků bývá past">$1</mark>');}catch(e){return s;}}
+
+/* swipe na dotykových zařízeních: vpravo = ANO, vlevo = NE */
+function attachSwipe(onYes,onNo,enabled){
+  const card=byId("stmt-0");if(!card)return;
+  let x0=0,y0=0,drag=false,pid=null;
+  card.addEventListener("pointerdown",e=>{
+    if(e.pointerType==="mouse")return;
+    if(e.target.closest("button"))return;
+    if(enabled&&!enabled())return;
+    drag=true;pid=e.pointerId;x0=e.clientX;y0=e.clientY;card.classList.add("swiping");
+  });
+  card.addEventListener("pointermove",e=>{
+    if(!drag||e.pointerId!==pid)return;
+    const dx=e.clientX-x0,dy=e.clientY-y0;
+    if(Math.abs(dy)>Math.abs(dx)+12){return;}
+    card.style.transform="translateX("+dx+"px) rotate("+(dx*0.03)+"deg)";
+    card.classList.toggle("sw-yes",dx>40);card.classList.toggle("sw-no",dx<-40);
+  });
+  const end=e=>{
+    if(!drag||e.pointerId!==pid)return;drag=false;
+    const dx=e.clientX-x0;
+    card.classList.remove("swiping","sw-yes","sw-no");card.style.transform="";
+    if(enabled&&!enabled())return;
+    if(dx>70)onYes();else if(dx<-70)onNo();
+  };
+  card.addEventListener("pointerup",end);card.addEventListener("pointercancel",end);
 }
 
 /* ============================================================
@@ -1362,18 +1548,18 @@ function scoreResult(correct,total,onRetry,onBack,extra){
 /* ---------- DNEŠNÍ DÁVKA (hlavní akce na Plánu) ---------- */
 function dailyHero(){
   ensureDaily();
-  const q=dailyQueue(),n=q.length,om=overallMastery();
+  const q=dailyQueue(),n=q.length,om=overallMastery(),rd=examReadiness();
   const goal=STORE.daily.goal,done=STORE.daily.done||0,streak=STORE.daily.streak||0;
-  const ring=ringSVG(om.pct,98,"var(--orange)",om.pct+"%","umíš");
+  const ring=ringSVG(rd.pct,106,"var(--orange)",rd.pct+"%","připraven");
   const cta=n>0
     ?`<button class="btn orange" style="font-size:15px;padding:14px 24px" onclick="trStartLearn()">Začni dnešní dávkou — ${n} ${cardWord(n)} →</button>`
     :`<button class="btn orange" onclick="show('trenazer')">Procvičit klasicky →</button>`;
   const head=n>0?("Dnes k zopakování: "+n+" "+cardWord(n)):"Pro dnešek hotovo 🎉";
   const sub=n>0
-    ?"Chytré opakování (Leitner) vybírá, co máš zopakovat dnes — prošlé termíny i pár nových výroků, promíchané napříč okruhy."
-    :"Žádné výroky nejsou po termínu. Pochval se a vrať se zítra na další dávku — nebo si dej rychlovku či zkoušku nanečisto.";
+    ?"Chytré opakování (Leitner) vybírá, co máš dnes zopakovat — prošlé termíny i pár nových výroků, promíchané napříč okruhy."
+    :"Žádné výroky nejsou po termínu. Pochval se a vrať se zítra — nebo si dej rychlovku či zkoušku nanečisto.";
   return `<div class="dhero mt-l">
-    <div class="ring">${ring}</div>
+    <div class="ring" style="text-align:center">${ring}<div style="margin-top:8px"><span class="verdict ${rd.cls}">${rd.verdict}</span></div></div>
     <div class="dbody">
       <div class="dk">Chytré opakování · dnešní dávka</div>
       <h3>${head}</h3>
@@ -1382,9 +1568,15 @@ function dailyHero(){
         <span class="dm">Dnes <b>${done}/${goal}</b></span>
         <span class="dm">🔥 Série <b>${streak}</b> ${dayWord(streak)}</span>
         <span class="dm">Zvládnuto <b>${om.m}/${om.total}</b></span>
+        <span class="dm">Připravenost <b>${rd.pct}%</b></span>
       </div>
       <div class="qactions">${cta}<button class="btn ghost sm" onclick="changeGoal()">Denní cíl: ${goal}</button></div>
     </div></div>`;
+}
+function achSection(){
+  const got=Object.keys(STORE.ach||{}).length;
+  return `<div style="margin-top:22px"><div class="prog-sub">Odznaky <span class="pmono">(${got}/${ACHS.length})</span></div>
+   <div class="achrow">${ACHS.map(a=>`<span class="achip ${STORE.ach&&STORE.ach[a.id]?'got':'locked'}" title="${a.desc}"><span class="ai">${a.ic}</span>${a.name}</span>`).join("")}</div></div>`;
 }
 function changeGoal(){
   const v=prompt("Denní cíl — kolik karet chceš zvládnout za den:",STORE.daily.goal);
@@ -1406,9 +1598,6 @@ function progressSection(){
   const exams=(STORE.exams||[]).slice(0,6);
   const wrongN=items.filter(it=>STORE.wrong[it.sid]).length;
   const starN=items.filter(it=>STORE.starred[it.sid]).length;
-  if(!tstats.length&&!exams.length)
-    return `<h3 class="section-h">Tvůj pokrok</h3>
-     <div class="kp"><div class="kph">Zatím prázdno</div><div>Pusť <b>trenažér</b> nebo <b>zkoušku nanečisto</b> — tady se ti pak ukáže úspěšnost po jednotlivých okruzích a historie zkoušek. Pokrok se ukládá ve tvém prohlížeči.</div></div>`;
   const weak=tstats.length
     ?`<div><div class="prog-sub">Úspěšnost po okruzích <span class="pmono">(nejslabší nahoře)</span></div>
        <div class="proglist">${tstats.map(o=>`<div class="progrow"><span class="pname">${o.t.title}</span><span class="pmono">${o.c}/${o.n}</span><span class="scorepill ${pctClass(o.pct)}">${o.pct} %</span></div>`).join("")}</div></div>`
@@ -1418,8 +1607,16 @@ function progressSection(){
        <div class="proglist">${exams.map(e=>`<div class="progrow"><span class="pname">${e.n} tvrzení</span><span class="pmono">${fmtDate(e.d)}</span><span class="scorepill ${pctClass(e.pct)}">${e.pct} %</span></div>`).join("")}</div></div>`
     :`<div><div class="prog-sub">Poslední zkoušky nanečisto</div><p class="block-note">Zatím žádná — zkus zkoušku nanečisto.</p></div>`;
   return `<h3 class="section-h">Tvůj pokrok</h3>
-   <p class="block-note" style="margin-bottom:14px">K procvičení: <b>${wrongN}</b> chybných · <b>${starN}</b> označených. <button class="linkbtn" onclick="resetProgress()">Vymazat pokrok</button></p>
-   <div class="prog2">${weak}${hist}</div>${masterySection()}`;
+   <p class="block-note" style="margin-bottom:14px">K procvičení: <b>${wrongN}</b> chybných · <b>${starN}</b> označených · <b>${leeches().length}</b> nejtěžších.</p>
+   <div class="prog2">${weak}${hist}</div>${masterySection()}
+   ${achSection()}
+   <div class="prog-sub" style="margin-top:22px">Data &amp; záloha</div>
+   <p class="block-note" style="margin:4px 0 10px">Pokrok se ukládá v tomto prohlížeči. Zálohuj si ho kódem a obnov na jiném zařízení.</p>
+   <div class="datatools">
+     <button class="btn ghost sm" onclick="exportProgress()">Zálohovat pokrok</button>
+     <button class="btn ghost sm" onclick="importProgress()">Obnovit ze zálohy</button>
+     <button class="linkbtn" onclick="resetProgress()">Vymazat pokrok</button>
+   </div>`;
 }
 
 /* ---------- PLÁN ---------- */
@@ -1443,6 +1640,7 @@ function renderPlan(){
      <div class="heroplane">${heroPlane()}</div>
    </div>
    ${dailyHero()}
+   <div class="mt">${heatmapHTML()}</div>
    <div class="statbar mt-l">${stats.map(([n,k])=>`<div class="stat"><div class="n${n[0]==='o'?' o':''}">${n[0]==='o'?n.slice(1):n}</div><div class="k">${k}</div></div>`).join("")}</div>
    ${progressSection()}
    <h3 class="section-h">Jak je test postavený</h3>
@@ -1492,6 +1690,7 @@ function trenerModes(){
   const wrongN=items.filter(it=>STORE.wrong[it.sid]).length;
   const starN=items.filter(it=>STORE.starred[it.sid]).length;
   const dueN=dailyQueue().length;
+  const hardN=leeches().length;
   byId("s-trenazer").innerHTML=`
    <p class="eyebrow">Jádro nástroje</p><h2 class="h-title">Trenažér ANO/NE</h2>
    <p class="lede">Trénuješ přesně formát zkoušky: u každého výroku rozhodneš ANO/NE a hned vidíš, jak to je a <b>proč</b>. Nejúčinnější je <b>Učení</b> (chytré opakování), nebo si vyber téma po blocích či rychlovku.</p>
@@ -1518,6 +1717,10 @@ function trenerModes(){
        <div class="mtag"><span class="tag p2">★ označené</span><span class="mono pmono">${starN}</span></div>
        <h4>Procvičit označené</h4><p>Výroky, které sis u procvičování označil hvězdičkou jako záludné. Procvič si přesně to, co tě nejvíc trápí.</p>
        <div class="mgo">${starN?"Spustit →":"Zatím prázdné"}</div></button>
+     <button class="modecard" onclick="trStartHard()">
+       <div class="mtag"><span class="tag p1">leech</span><span class="mono pmono">${hardN}</span></div>
+       <h4>Nejtěžší výroky</h4><p>Výroky, na kterých opakovaně chybuješ (3+ zaškobrtnutí). Appka je sama vychytá — zaměř se přesně na ně.</p>
+       <div class="mgo">${hardN?"Spustit →":"Zatím prázdné"}</div></button>
    </div>`;
 }
 
@@ -1532,7 +1735,7 @@ function trBlock(){
   TR.ans={};TR.checked=false;
   const rows=b.items.map((it,i)=>`
     <div class="stmt" id="stmt-${i}">
-      <div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(sidOf(b.topic,it.t))}</div>
+      <div class="stmt-head"><div class="stmt-t">${markTraps(it.t)}</div>${starBtn(sidOf(b.topic,it.t))}</div>
       <div class="tfbtns">
         <button class="tf yes" id="tf-${i}-y" onclick="trPick(${i},true)">ANO</button>
         <button class="tf no" id="tf-${i}-n" onclick="trPick(${i},false)">NE</button></div>
@@ -1571,7 +1774,7 @@ function trCheckBlock(){
     const why=byId("why-"+i);why.className="why show";
     why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
   });
-  saveStore();
+  saveStore();checkAchievements();
   TR.checked=true;
   byId("tr-check").style.display="none";byId("tr-next").style.display="";
 }
@@ -1599,6 +1802,12 @@ function trStartStarred(){
   TR={kind:"starred",list:shuffle(list),ri:0,correct:0,checked:false,label:"Označené",retry:"trStartStarred()"};
   show("trenazer");trRapid();
 }
+function trStartHard(){
+  const list=leeches();
+  if(!list.length){trEmpty("Žádné záludné výroky 👌","Tady se objeví výroky, na kterých opakovaně chybuješ (3+ zaškobrtnutí). Zatím žádné nemáš — paráda.");return;}
+  TR={kind:"hard",list:shuffle(list),ri:0,correct:0,checked:false,label:"Nejtěžší výroky",retry:"trStartHard()"};
+  show("trenazer");trRapid();
+}
 function trEmpty(title,msg){
   show("trenazer");
   byId("s-trenazer").innerHTML=`
@@ -1615,13 +1824,15 @@ function trRapid(){
    <div class="qprog"><div class="bar"><div class="fill" style="width:${TR.ri/n*100}%"></div></div><div class="ct">${TR.ri+1} / ${n}</div></div>
    <div class="block-note">${it.stem}</div>
    <div class="stmt" id="stmt-0">
-     <div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
+     <div class="stmt-head"><div class="stmt-t">${markTraps(it.t)}</div>${starBtn(it.sid)}</div>
      <div class="tfbtns">
        <button class="tf yes" id="tf-0-y" onclick="trPickRapid(true)">ANO</button>
        <button class="tf no" id="tf-0-n" onclick="trPickRapid(false)">NE</button></div>
      <div class="why" id="why-0"></div></div>
    <div class="qactions"><button class="btn" id="tr-next" onclick="trNextRapid()" style="display:none">${last?"Zobrazit výsledek →":"Další →"}</button><span class="spacer"></span></div>
-   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ · <kbd>Enter</kbd> další</div>`;
+   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ · <kbd>Enter</kbd> další</div>
+   <div class="swcue">👆 Potáhni vpravo = ANO, vlevo = NE</div>`;
+  attachSwipe(()=>trPickRapid(true),()=>trPickRapid(false),()=>!TR.checked);
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function trPickRapid(val){
@@ -1631,7 +1842,7 @@ function trPickRapid(val){
   (it.a?y:no).classList.add("correct");
   if(val!==it.a)(val?y:no).classList.add("wrong");
   const ok=val===it.a;if(ok)TR.correct++;
-  recordAnswer(it.topic,it.sid,ok);saveStore();
+  recordAnswer(it.topic,it.sid,ok);saveStore();checkAchievements();
   byId("stmt-0").classList.add(ok?"ok":"bad");
   const why=byId("why-0");why.className="why show";
   why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
@@ -1666,13 +1877,16 @@ function trLearn(){
    <div class="qprog"><div class="bar"><div class="fill" style="width:${total?doneU/total*100:0}%"></div></div><div class="ct">${doneU} / ${total} hotovo</div></div>
    <div class="block-note">${it.stem}</div>
    <div class="stmt" id="stmt-0">
-     <div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
+     <div class="stmt-head"><div class="stmt-t">${markTraps(it.t)}</div>${starBtn(it.sid)}</div>
      <div class="tfbtns">
        <button class="tf yes" id="tf-0-y" onclick="trPickLearn(true)">ANO</button>
        <button class="tf no" id="tf-0-n" onclick="trPickLearn(false)">NE</button></div>
      <div class="why" id="why-0"></div></div>
    <div class="qactions"><button class="btn" id="tr-next" onclick="trNextLearn()" style="display:none">Další →</button><span class="spacer"></span></div>
-   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ · <kbd>Enter</kbd> další</div>`;
+   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ · <kbd>Enter</kbd> další</div>
+   <div class="swcue">👆 Potáhni vpravo = ANO, vlevo = NE</div>`;
+  TR.t0=Date.now();
+  attachSwipe(()=>trPickLearn(true),()=>trPickLearn(false),()=>!TR.checked);
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function trPickLearn(val){
@@ -1686,8 +1900,14 @@ function trPickLearn(val){
   why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
   if(TR.firstTry[it.sid]===undefined)TR.firstTry[it.sid]=ok;   /* skóre sezení = první pokus */
   if(!ok)TR.wrong[it.sid]=it;
-  srsReview(it.sid,ok);recordAnswer(it.topic,it.sid,ok);saveStore();
+  const ms=TR.t0?Date.now()-TR.t0:0;
+  srsReview(it.sid,ok,ms);recordAnswer(it.topic,it.sid,ok);saveStore();checkAchievements();
   byId("tr-next").style.display="";
+  if(ok){const b=document.createElement("button");b.className="btn ghost sm";b.type="button";b.textContent="Umím jistě ✓";b.title="Přeskočí výrok rovnou do nejdelšího intervalu";b.onclick=learnEasy;byId("tr-next").parentNode.insertBefore(b,byId("tr-next"));}
+}
+function learnEasy(){
+  if(TR.cur){const s=STORE.srs[TR.cur.sid];if(s){s.box=5;s.due=Date.now()+SRS_DAYS[5]*DAY_MS;saveStore();}}
+  trNextLearn();
 }
 function trNextLearn(){
   const it=TR.queue.shift();
@@ -1717,7 +1937,7 @@ function breakdownRows(byTopic){
 }
 function wrongReviewList(items){
   if(!items.length)return `<div class="kp" style="margin-top:18px"><div class="kph">Bez chyb 🎉</div><div>Všechno správně. Paráda — tohle už máš v ruce.</div></div>`;
-  return `<div class="prog-sub" style="margin-top:20px">Co bylo špatně</div>${items.map(it=>`<div class="stmt bad"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div><div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}</div></div>`).join("")}`;
+  return `<div class="prog-sub" style="margin-top:20px">Co bylo špatně</div>${items.map(it=>`<div class="stmt bad"><div class="stmt-head"><div class="stmt-t">${markTraps(it.t)}</div>${starBtn(it.sid)}</div><div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}</div></div>`).join("")}`;
 }
 function sessionExtra(byTopic,wrongItems,note){
   const practice=wrongItems.length?`<div class="qactions" style="justify-content:center;margin-top:16px"><button class="btn orange" onclick="practiceErrors(ERR_SIDS)">Procvičit tyto chyby (${wrongItems.length}) →</button></div>`:"";
@@ -1771,12 +1991,14 @@ function exRender(){
      <button class="btn ghost sm" onclick="exQuit()">Ukončit</button></div>
    <div class="qprog"><div class="bar"><div class="fill" style="width:${EX.i/n*100}%"></div></div><div class="ct">${Math.round(EX.i/n*100)}&nbsp;%</div></div>
    <div class="block-note">${it.stem}</div>
-   <div class="stmt" id="stmt-0"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
+   <div class="stmt" id="stmt-0"><div class="stmt-head"><div class="stmt-t">${markTraps(it.t)}</div>${starBtn(it.sid)}</div>
      <div class="tfbtns">
        <button class="tf yes" onclick="exAns(true)">ANO</button>
        <button class="tf no" onclick="exAns(false)">NE</button></div></div>
    <p class="block-note" style="margin-top:14px">Vyber ANO/NE — automaticky přejdeš na další. Vyhodnocení až na konci.</p>
-   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ označit</div>`;
+   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ označit</div>
+   <div class="swcue">👆 Potáhni vpravo = ANO, vlevo = NE</div>`;
+  attachSwipe(()=>exAns(true),()=>exAns(false),()=>true);
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function exAns(val){
@@ -1794,7 +2016,7 @@ function exFinish(){
     if(u!==null)recordAnswer(it.topic,it.sid,u===it.a);
   });
   STORE.exams=[{d:Date.now(),pct:EX.list.length?Math.round(correct/EX.list.length*100):0,n:EX.list.length,correct},...(STORE.exams||[])].slice(0,12);
-  saveStore();
+  saveStore();checkAchievements();
   const byTopic={};
   EX.list.forEach((it,k)=>{const o=(byTopic[it.topic]=byTopic[it.topic]||{c:0,n:0});o.n++;if(EX.answers[k]===it.a)o.c++;});
   const wrongItems=EX.list.filter((it,k)=>EX.answers[k]!==it.a);
@@ -1802,7 +2024,7 @@ function exFinish(){
   const practice=wrongItems.length?`<div class="qactions" style="justify-content:center;margin-top:16px"><button class="btn orange" onclick="practiceErrors(ERR_SIDS)">Procvičit tyto chyby (${wrongItems.length}) →</button></div>`:"";
   const review=EX.list.map((it,k)=>{
     const u=EX.answers[k],ok=u===it.a,utxt=u===null?"—":(u?"ANO":"NE");
-    return `<div class="stmt ${ok?"ok":"bad"}"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
+    return `<div class="stmt ${ok?"ok":"bad"}"><div class="stmt-head"><div class="stmt-t">${markTraps(it.t)}</div>${starBtn(it.sid)}</div>
       <div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span><b>Tvoje: ${utxt}</b> — ${it.why}</div></div>`;
   }).join("");
   const extra=`<div class="brkwrap" style="margin-top:26px">
@@ -1854,6 +2076,7 @@ function onKey(e){
   const k=e.key;
   const help=byId("helpModal");
   if(help&&help.classList.contains("on")){if(k==="Escape")toggleHelp(false);return;}
+  if(k==="?"){e.preventDefault();toggleHelp(true);return;}
   /* zkouška nanečisto — jen v běžícím testu (ne na výsledku) */
   if(CUR==="zkouska"&&EX&&EX.list&&byId("ex-clock")){
     if(k==="s"||k==="S"){e.preventDefault();starCurrent();}
