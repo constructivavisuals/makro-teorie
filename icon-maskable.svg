@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- full-bleed background so launcher mask can crop safely -->
+  <rect width="512" height="512" fill="#0E1619"/>
+  <g fill="none" stroke="#BAD3D7" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <!-- coordinate axes (kept within 80% safe zone) -->
+    <path d="M168 168 V344 H344"/>
+    <!-- rising curve -->
+    <path d="M192 320 L246 272 L294 296 L336 216" stroke="#4E7A85" stroke-width="20"/>
+  </g>
+  <g fill="#BAD3D7">
+    <circle cx="246" cy="272" r="11"/>
+    <circle cx="294" cy="296" r="11"/>
+    <circle cx="336" cy="216" r="11"/>
+  </g>
+</svg>

@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Makroekonomie II — teorie ANO/NE (BALN)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Constructiva brand */
+  --powder:#BAD3D7; --powder-d:#9CBCC3; --powder-soft:#E2EEF0;
+  --slate:#274047; --steel:#4F6771;
+  /* functional (consumed by JS + diagrams) */
+  --navy:#1C2E34; --navy-2:#243A41; --navy-3:#31494F; --navy-ink:#CAD8DB; --navy-ink-2:#88A0A7;
+  --bg:#E8EEEF; --grid:#D4DFE1; --surface:#FFFFFF; --surface-2:#F1F6F7;
+  --ink:#22363C; --ink-2:#48646D; --ink-3:#728C94;
+  --line:#DAE4E6; --line-2:#C1D1D4;
+  --orange:#4E7A85; --orange-d:#3B616B; --orange-soft:#DCEAEC; --orange-line:rgba(78,122,133,.32);
+  --green:#3E8E73; --green-d:#2C6B55; --green-soft:#DBEEE7; --green-line:rgba(62,142,115,.32);
+  --red:#BC5B5B; --red-d:#9B4242; --red-soft:#F6E3E3; --red-line:rgba(188,91,91,.32);
+  --amber:#B07D2E; --amber-soft:#F3E8D5; --amber-line:rgba(176,125,46,.34);
+  --violet:#2F8C9C; --violet-soft:#DCEFF1;
+  --radius:16px; --radius-s:12px; --radius-xs:9px;
+  --shadow:0 1px 2px rgba(34,54,60,.05), 0 12px 28px -20px rgba(34,54,60,.30);
+  --shadow-lg:0 2px 8px rgba(34,54,60,.07), 0 30px 60px -30px rgba(34,54,60,.42);
+  --xhair:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ccircle cx='6' cy='6' r='3' fill='none' stroke='%234E7A85' stroke-width='1.3'/%3E%3Cpath d='M6 .5v2.5M6 9v2.5M.5 6h2.5M9 6h2.5' stroke='%234E7A85' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px),
+    linear-gradient(rgba(34,54,60,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(34,54,60,.05) 1px,transparent 1px);
+  background-size:24px 24px,24px 24px,120px 120px,120px 120px;
+  background-position:center top;}
+h1,h2,h3,h4,h5{font-family:"Space Grotesk",sans-serif;font-weight:600;line-height:1.12;margin:0;letter-spacing:-.02em}
+.mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+a{color:var(--orange-d)}
+::selection{background:rgba(78,122,133,.20)}
+:focus-visible{outline:2.5px solid var(--orange);outline-offset:2px;border-radius:5px}
+
+/* ---------- layout ---------- */
+.app{display:flex;min-height:100vh;align-items:stretch}
+.rail{position:sticky;top:0;align-self:flex-start;height:100vh;width:258px;flex:0 0 258px;background:var(--navy);color:var(--navy-ink);
+  display:flex;flex-direction:column;padding:22px 16px;gap:6px;
+  background-image:linear-gradient(rgba(186,211,215,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(186,211,215,.04) 1px,transparent 1px);
+  background-size:23px 23px;background-position:16px 16px;}
+.brand{display:flex;gap:12px;align-items:center;padding:4px 8px 16px}
+.logo{width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:linear-gradient(150deg,var(--navy-3),var(--navy-2));display:grid;place-items:center;border:1px solid rgba(186,211,215,.22);box-shadow:0 6px 16px -8px rgba(0,0,0,.5)}
+.brand h1{font-size:16px;color:#fff;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.brand .sub{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.07em;color:var(--navy-ink-2);margin-top:4px;text-transform:uppercase}
+
+.nav{display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;margin-top:4px}
+.nlabel{font-family:"JetBrains Mono",monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.18em;color:var(--navy-ink-2);padding:18px 12px 7px;opacity:.85}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;color:var(--navy-ink);
+  padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;position:relative;transition:background .15s,color .15s}
+.nav button svg{width:18px;height:18px;flex:0 0 18px;opacity:.72;transition:opacity .15s,color .15s}
+.nav button .lbl{flex:1}
+.nav button .pin{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--navy-ink-2);font-weight:600;letter-spacing:.02em}
+.nav button:hover{background:rgba(186,211,215,.08);color:#fff}
+.nav button:hover svg{opacity:1}
+.nav button.on{background:rgba(186,211,215,.14);color:#fff}
+.nav button.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--powder)}
+.nav button.on svg{opacity:1;color:var(--powder)}
+.nav button.on .pin{color:var(--powder)}
+
+.foot{font-size:12px;color:var(--navy-ink-2);line-height:1.5;padding:15px 12px 4px;border-top:1px solid rgba(186,211,215,.12);margin-top:6px}
+.foot b{color:var(--navy-ink)}
+.countdown{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.countdown .num{font-family:"Space Grotesk";font-weight:700;font-size:32px;color:var(--powder);line-height:1;letter-spacing:-.02em}
+.countdown .lab{font-family:"JetBrains Mono",monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--navy-ink-2);line-height:1.3}
+
+.main{flex:1;min-width:0}
+.wrap{max-width:1020px;margin:0 auto;padding:48px 40px 96px}
+.screen{display:none}
+.screen.on{display:block}
+
+/* ---------- type / hero ---------- */
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.17em;color:var(--orange-d);font-weight:600;display:inline-flex;align-items:center;gap:9px;margin:0 0 16px}
+.eyebrow::before{content:"";width:13px;height:13px;flex:0 0 13px;background:var(--xhair) center/contain no-repeat}
+.hero{display:grid;grid-template-columns:1.12fr .88fr;gap:42px;align-items:center}
+.h-title{font-size:clamp(33px,4.7vw,53px);font-weight:700;letter-spacing:-.03em;line-height:1.03;color:var(--ink)}
+.lede{font-size:18px;line-height:1.62;color:var(--ink-2);max-width:60ch;margin:18px 0 0}
+.lede b{color:var(--ink);font-weight:600}
+.heroplane{background:#0E1619;border:1px solid var(--line-2);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:16px;position:relative;overflow:hidden}
+.heroplane svg{display:block;width:100%;height:auto}
+
+.section-h{font-family:"Space Grotesk";font-size:21px;font-weight:600;letter-spacing:-.01em;color:var(--ink);margin:48px 0 18px;display:flex;align-items:center;gap:14px}
+.section-h::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line-2),transparent)}
+
+/* ---------- statbar ---------- */
+.statbar{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:32px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:17px 19px;box-shadow:var(--shadow)}
+.stat .n{font-family:"Space Grotesk";font-weight:700;font-size:31px;color:var(--ink);line-height:1;letter-spacing:-.025em}
+.stat .n.o{color:var(--orange-d)}
+.stat .k{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.05em;color:var(--ink-3);margin-top:9px;text-transform:uppercase}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--powder-d);background:var(--powder);color:var(--navy);
+  padding:12px 21px;border-radius:11px;font-size:14.5px;font-weight:600;font-family:"Hanken Grotesk";letter-spacing:-.005em;
+  transition:transform .12s,box-shadow .15s,background .15s,border-color .15s;box-shadow:var(--shadow)}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);background:var(--powder-d)}
+.btn:active{transform:translateY(0)}
+.btn.orange{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.06),0 15px 28px -14px rgba(28,46,52,.55)}
+.btn.orange:hover{background:#152329;border-color:#152329}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.green:hover{background:var(--green-d);border-color:var(--green-d)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-2);box-shadow:none}
+.btn.ghost:hover{background:var(--surface);border-color:var(--ink-3);transform:translateY(-1px)}
+.btn.sm{padding:8px 14px;font-size:13px;border-radius:9px}
+.btn[disabled]{opacity:.45;cursor:default;transform:none;box-shadow:none}
+
+/* ---------- key points ---------- */
+.kp{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:var(--radius-s);padding:16px 20px;box-shadow:var(--shadow);margin-top:13px}
+.kp .kph{font-family:"Space Grotesk";font-weight:600;font-size:15.5px;color:var(--ink);margin-bottom:5px}
+.kp>div:last-child{font-size:14.5px;color:var(--ink-2);line-height:1.58}
+.kp b{color:var(--ink)}
+
+/* ---------- tags ---------- */
+.tag{display:inline-flex;align-items:center;font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.tag.p1{background:var(--orange-soft);color:var(--orange-d);border-color:var(--orange-line)}
+.tag.p2{background:var(--surface-2);color:var(--ink-2);border-color:var(--line-2)}
+.tag.p3{background:transparent;color:var(--ink-3);border-color:var(--line-2)}
+.tag.calc{background:var(--violet-soft);color:var(--violet)}
+
+/* ---------- grid / cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+
+/* ---------- topic grid ---------- */
+.topicgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 19px;text-align:left;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;transition:transform .14s,border-color .15s,box-shadow .15s}
+.tcard:hover{transform:translateY(-3px);border-color:var(--orange-line);box-shadow:var(--shadow-lg)}
+.tcard .trow1{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tcard .tnum{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;color:var(--ink-3);letter-spacing:.04em;transition:color .15s}
+.tcard:hover .tnum{color:var(--orange-d)}
+.tcard h3{font-family:"Space Grotesk";font-size:16.5px;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin-bottom:7px;line-height:1.22}
+.tcard .tdesc{font-size:13px;color:var(--ink-2);line-height:1.5;flex:1}
+.tcard .tfoot{display:flex;justify-content:space-between;gap:8px;margin-top:15px;padding-top:12px;border-top:1px dashed var(--line-2);font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-3)}
+
+/* ---------- plan blocks ---------- */
+.plan-block{display:flex;gap:18px;padding:17px 0;border-bottom:1px solid var(--line)}
+.plan-block:last-child{border-bottom:0}
+.plan-block .when{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;color:var(--orange-d);letter-spacing:.05em;flex:0 0 56px;padding-top:3px}
+.plan-block .body{flex:1}
+.plan-block .body h4{font-family:"Space Grotesk";font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* ---------- diagrams ---------- */
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;overflow:hidden}
+.diagram svg{display:block;width:100%;height:auto}
+.diagram .dcap{font-size:12.5px;color:var(--ink-3);margin-top:12px;text-align:center;font-family:"JetBrains Mono",monospace;letter-spacing:.02em}
+.axis{stroke:var(--ink-2);stroke-width:1.8}
+.gridln{stroke:var(--line);stroke-width:1}
+.curve{fill:none;stroke-width:2.6;stroke-linecap:round}
+.clabel{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600}
+.alabel{font-family:"JetBrains Mono",monospace;font-size:12px;fill:var(--ink-3)}
+.ic{display:inline-flex;align-items:center}
+
+/* ---------- mode cards ---------- */
+.tr-intro{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:16px;margin-top:20px}
+.modecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:22px;text-align:left;display:flex;flex-direction:column;gap:9px;transition:transform .14s,border-color .15s,box-shadow .15s}
+.modecard:hover{transform:translateY(-3px);border-color:var(--orange-line);box-shadow:var(--shadow-lg)}
+.modecard .mtag{display:flex;gap:7px;align-items:center}
+.modecard h4{font-family:"Space Grotesk";font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.modecard p{font-size:13.5px;color:var(--ink-2);flex:1;margin:0;line-height:1.55}
+.modecard .mgo{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--orange-d);font-weight:700;letter-spacing:.03em}
+
+/* ---------- chips ---------- */
+.chiprow{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+.chip{background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:500;font-family:"Hanken Grotesk";transition:transform .13s,background .13s,border-color .13s,color .13s}
+.chip:hover{border-color:var(--orange);color:var(--orange-d);background:var(--orange-soft);transform:translateY(-1px)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* ---------- progress ---------- */
+.qprog{display:flex;align-items:center;gap:14px;margin:8px 0 24px}
+.qprog .bar{flex:1;height:7px;background:var(--line);border-radius:999px;overflow:hidden}
+.qprog .fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--powder));border-radius:999px;transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.qprog .ct{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:600;color:var(--ink-3);white-space:nowrap}
+
+/* ---------- actions / backbar ---------- */
+.qactions{display:flex;align-items:center;gap:11px;margin-top:24px;flex-wrap:wrap}
+.qactions .spacer{flex:1}
+.backbar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+
+/* ---------- result ---------- */
+.result{text-align:center;max-width:580px;margin:12px auto 0;display:flex;flex-direction:column;align-items:center}
+.result .donut{margin:0 auto 6px}
+.result .big{font-family:"Space Grotesk";font-weight:700;font-size:30px;letter-spacing:-.02em;margin-top:4px}
+.result .big.pass{color:var(--green-d)}
+.result .big.fail{color:var(--orange-d)}
+.result .rsub{font-family:"JetBrains Mono",monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);margin-top:5px}
+.result .rmsg{font-size:15px;color:var(--ink-2);line-height:1.6;margin-top:15px;max-width:46ch}
+
+/* ---------- ANO/NE ---------- */
+.stem{font-family:"Space Grotesk";font-weight:600;font-size:19px;color:var(--ink);line-height:1.38;letter-spacing:-.012em;margin:2px 0 4px}
+.stem::before{content:"";display:inline-block;width:14px;height:14px;background:var(--xhair) center/contain no-repeat;margin-right:10px;vertical-align:-1px;opacity:.92}
+.stem .q{color:inherit}
+.block-note{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-3);margin-bottom:6px;letter-spacing:.01em;line-height:1.5}
+.stmt{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-s);padding:15px 18px;margin-top:12px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+.stmt.ok{border-color:var(--green-line);border-left:3px solid var(--green)}
+.stmt.bad{border-color:var(--red-line);border-left:3px solid var(--red)}
+.stmt-t{font-size:15.5px;line-height:1.55;color:var(--ink)}
+.tfbtns{display:flex;gap:9px;margin-top:13px}
+.tf{min-width:84px;padding:9px 18px;border-radius:10px;border:1.6px solid var(--line-2);background:var(--surface);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;letter-spacing:.06em;color:var(--ink-2);transition:transform .12s,background .14s,border-color .14s,color .14s,box-shadow .14s}
+.tf.yes:hover:not([disabled]){border-color:var(--green);color:var(--green-d);background:var(--green-soft)}
+.tf.no:hover:not([disabled]){border-color:var(--red);color:var(--red-d);background:var(--red-soft)}
+.tf.sel.yes{background:var(--green-soft);border-color:var(--green);color:var(--green-d);box-shadow:inset 0 0 0 1.4px var(--green)}
+.tf.sel.no{background:var(--red-soft);border-color:var(--red);color:var(--red-d);box-shadow:inset 0 0 0 1.4px var(--red)}
+.tf[disabled]{cursor:default}
+.tf.correct{border-color:var(--green);background:var(--green);color:#fff;box-shadow:0 9px 18px -10px rgba(62,142,115,.7)}
+.tf.wrong{border-color:var(--red);background:var(--red);color:#fff}
+.tf.muted{opacity:.3}
+.why{font-size:13.5px;line-height:1.58;color:var(--ink-2);max-height:0;overflow:hidden;transition:max-height .32s ease,margin .2s,padding .2s}
+.why.show{max-height:640px;margin-top:13px;padding-top:13px;border-top:1px dashed var(--line-2)}
+.why .badge{display:inline-flex;align-items:center;gap:5px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:6px;margin-right:9px;vertical-align:middle}
+.why .badge.y{background:var(--green-soft);color:var(--green-d)}
+.why .badge.n{background:var(--red-soft);color:var(--red-d)}
+.why b{color:var(--ink)}
+
+.tflist{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+.tfitem{display:flex;gap:13px;align-items:flex-start;font-size:14.5px;line-height:1.5;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:13px 16px;box-shadow:var(--shadow)}
+.tfitem .mk{flex:0 0 23px;height:23px;border-radius:7px;display:grid;place-items:center;color:#fff;margin-top:1px}
+.tfitem .mk svg{width:14px;height:14px}
+.tfitem .mk.y{background:var(--green)}
+.tfitem .mk.n{background:var(--red)}
+.tfitem .x{color:var(--ink)}
+.tfitem .w{color:var(--ink-2);font-size:13px;display:block;margin-top:4px;line-height:1.5}
+
+/* ---------- exam hud ---------- */
+.examhud{display:flex;align-items:center;gap:13px;margin:4px 0 16px;flex-wrap:wrap}
+.examhud .clock{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:10px;padding:7px 14px;letter-spacing:.04em}
+.examhud .clock::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--orange);margin-right:9px;vertical-align:middle;animation:blink 1.6s steps(1,end) infinite}
+.examhud .scoremini{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-3);font-weight:600}
+.examhud .spacer{flex:1}
+
+/* ---------- helpers ---------- */
+.mt{margin-top:18px}
+.mt-l{margin-top:34px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:no-preference){
+  .screen.on{animation:rise .5s cubic-bezier(.2,.7,.2,1)}
+  .heroplane .curve{stroke-dasharray:900;stroke-dashoffset:900;animation:draw 1.5s ease forwards .25s}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- mobile ---------- */
+@media (max-width:860px){
+  .app{flex-direction:column}
+  .rail{position:static;height:auto;width:auto;flex:none;flex-direction:row;align-items:center;gap:10px;padding:11px 14px;overflow:hidden;background-position:0 0}
+  .brand{padding:0;flex:0 0 auto}
+  .brand h1{font-size:14.5px}
+  .brand .sub{display:none}
+  .logo{width:34px;height:34px;flex:0 0 34px}
+  .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px;margin-top:0;-webkit-overflow-scrolling:touch}
+  .nlabel{display:none}
+  .nav button{flex:0 0 auto;padding:8px 13px}
+  .nav button .lbl{white-space:nowrap}
+  .nav button .pin{display:none}
+  .nav button.on::before{display:none}
+  .foot{display:none}
+  .wrap{padding:30px 20px 84px}
+  .hero{grid-template-columns:1fr;gap:26px}
+  .heroplane{order:-1}
+  .statbar{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 20V4M4 20H20" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M4 16C8 16 9 7 13 7C16 7 16 12 20 12" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <h1>Makro&nbsp;II — teorie</h1>
+        <div class="sub">BALN · zkouška ANO/NE</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">
+      <div class="countdown"><span class="num">48</span><span class="lab">tvrzení<br>u zkoušky</span></div>
+      Jen teorie, formát <b>ANO/NE</b>.<br>Trénuj rozpoznat past.
+    </div>
+  </aside>
+  <main class="main">
+    <div class="wrap">
+      <section class="screen on" id="s-plan"></section>
+      <section class="screen" id="s-okruhy"></section>
+      <section class="screen" id="s-trenazer"></section>
+      <section class="screen" id="s-zkouska"></section>
+      <section class="screen" id="s-prehled"></section>
+    </div>
+  </main>
+</div>
+<script>
+/* ============================================================
+   ENGINE — Makro II teorie (ANO/NE)
+============================================================ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const byId=id=>document.getElementById(id);
+const titleOf=tt=>{const t=TOPICS.find(x=>x.id===tt);return t?t.title:tt;};
+
+const COICON={
+ pozor:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ intuice:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6m-5 3h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ mnemo:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+const ICO_OK='<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICO_NO='<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ---------- NAV ---------- */
+function buildNav(){
+  const grpLabel={start:"Start",uc:"Učení & procvičování",konec:"Před testem"};
+  let html="",last=null;
+  SECTIONS.forEach(s=>{
+    if(s.grp!==last){html+=`<div class="nlabel">${grpLabel[s.grp]||""}</div>`;last=s.grp;}
+    html+=`<button data-id="${s.id}" onclick="show('${s.id}')"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none">${s.ic}</svg></span><span class="lbl">${s.label}</span><span class="pin">${s.sh}</span></button>`;
+  });
+  $("#nav").innerHTML=html;
+}
+function show(id){
+  $$(".screen").forEach(s=>s.classList.remove("on"));
+  byId("s-"+id).classList.add("on");
+  $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.id===id));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- DIAGRAMS ---------- */
+function diagWrap(svg,cap){return `<div class="diagram">${svg}<div class="dcap">${cap}</div></div>`;}
+const AX='class="axis"',GL='class="gridln"';
+function axes(xlab,ylab){
+  let g="";for(let i=1;i<=5;i++){const x=52+i*60;if(x<410)g+=`<line ${GL} x1="${x}" y1="28" x2="${x}" y2="232"/>`;}
+  for(let i=1;i<=4;i++){const y=232-i*44;g+=`<line ${GL} x1="52" y1="${y}" x2="410" y2="${y}"/>`;}
+  return `${g}<line ${AX} x1="52" y1="28" x2="52" y2="232"/><line ${AX} x1="52" y1="232" x2="410" y2="232"/>
+   <text class="alabel" x="58" y="40">${ylab}</text><text class="alabel" x="360" y="248">${xlab}</text>
+   <polygon points="52,24 49,32 55,32" fill="var(--ink-2)"/><polygon points="414,232 406,229 406,235" fill="var(--ink-2)"/>`;
+}
+const DIAG={
+ keynes:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("produkt (Y)","výdaje")}
+   <line x1="52" y1="232" x2="256" y2="28" class="curve" stroke="var(--ink-3)" stroke-dasharray="3 4"/>
+   <text class="clabel" x="206" y="44" fill="var(--ink-3)">45°  (Y=AE)</text>
+   <line x1="52" y1="150" x2="410" y2="74" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="360" y="68" fill="var(--orange-d)">AE</text>
+   <line x1="52" y1="120" x2="410" y2="44" class="curve" stroke="var(--orange)" stroke-dasharray="4 4" opacity=".5"/>
+   <text class="clabel" x="360" y="40" fill="var(--orange-d)" opacity=".7">AE'</text>
+   <circle cx="158" cy="126" r="4.5" fill="var(--navy)"/>
+   <line x1="158" y1="126" x2="158" y2="232" class="gridln" stroke-dasharray="3 3"/>
+   <text class="clabel" x="150" y="248" fill="var(--navy)">Y*</text></svg>`,
+   "Keynesiánský kříž: rovnováha tam, kde plánované výdaje (AE) protnou linii 45°. Posun AE → nová rovnováha (násobeno multiplikátorem)."),
+ islmbp:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("produkt (Y)","úrok i")}
+   <line x1="70" y1="60" x2="400" y2="210" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="372" y="206" fill="var(--orange-d)">IS</text>
+   <line x1="80" y1="214" x2="396" y2="64" class="curve" stroke="var(--navy)"/>
+   <text class="clabel" x="372" y="62" fill="var(--navy)">LM</text>
+   <line x1="70" y1="186" x2="400" y2="96" class="curve" stroke="var(--green)" stroke-dasharray="6 4"/>
+   <text class="clabel" x="372" y="100" fill="var(--green-d)">BP</text>
+   <circle cx="235" cy="150" r="4.5" fill="var(--red-d)"/></svg>`,
+   "Model IS-LM-BP. BP podle mobility kapitálu: vodorovná (dokonalá) · rostoucí (nedokonalá, zde) · svislá (nulová). Průsečík všech tří = vnější i vnitřní rovnováha."),
+ money:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("množství peněz M/P","úrok i")}
+   <path d="M70 64 C 150 120, 240 196, 396 214" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="350" y="206" fill="var(--orange-d)">L (poptávka)</text>
+   <line x1="250" y1="28" x2="250" y2="232" class="curve" stroke="var(--navy)"/>
+   <text class="clabel" x="256" y="44" fill="var(--navy)">M/P (nabídka)</text>
+   <circle cx="250" cy="150" r="4.5" fill="var(--red-d)"/>
+   <line x1="52" y1="150" x2="250" y2="150" class="gridln" stroke-dasharray="3 3"/>
+   <text class="clabel" x="20" y="154" fill="var(--ink-2)">i*</text></svg>`,
+   "Trh peněz: poptávka L = kY − hi klesá s úrokem, nabídka je svislá (určuje ČNB). Průsečík určuje rovnovážný úrok."),
+ labor:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("zaměstnanost L","reálná mzda w")}
+   <line x1="70" y1="64" x2="400" y2="206" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="356" y="200" fill="var(--orange-d)">LD (poptávka)</text>
+   <line x1="80" y1="210" x2="396" y2="70" class="curve" stroke="var(--navy)"/>
+   <text class="clabel" x="356" y="68" fill="var(--navy)">LS (nabídka)</text>
+   <circle cx="236" cy="148" r="4.5" fill="var(--red-d)"/></svg>`,
+   "Trh práce: poptávka po práci (firmy) klesá s mzdou, nabídka (domácnosti) roste. Průsečík = rovnovážná mzda a zaměstnanost."),
+ phillips:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("nezaměstnanost u","inflace π")}
+   <path d="M70 58 C 150 130, 230 200, 396 214" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="318" y="206" fill="var(--orange-d)">SR Phillips</text>
+   <line x1="250" y1="28" x2="250" y2="232" class="curve" stroke="var(--navy)" stroke-dasharray="6 4"/>
+   <text class="clabel" x="256" y="44" fill="var(--navy)">LR (svislá)</text>
+   <text class="clabel" x="240" y="248" fill="var(--navy)">u*</text></svg>`,
+   "Phillipsova křivka: krátkodobě nepřímý vztah inflace ↔ nezaměstnanost. Dlouhodobě svislá na přirozené míře u* — trvalý trade-off neexistuje."),
+ solow:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("kapitál na prac. k","produkt / investice")}
+   <path d="M52 232 C 160 96, 280 70, 400 56" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="350" y="50" fill="var(--orange-d)">f(k)</text>
+   <path d="M52 232 C 160 150, 280 120, 400 104" class="curve" stroke="var(--violet)" stroke-dasharray="2 0" opacity=".8"/>
+   <text class="clabel" x="350" y="100" fill="var(--violet)">s·f(k)</text>
+   <line x1="52" y1="232" x2="372" y2="60" class="curve" stroke="var(--navy)"/>
+   <text class="clabel" x="330" y="56" fill="var(--navy)">d·k</text>
+   <circle cx="243" cy="129" r="4.5" fill="var(--red-d)"/>
+   <line x1="243" y1="129" x2="243" y2="232" class="gridln" stroke-dasharray="3 3"/>
+   <text class="clabel" x="232" y="248" fill="var(--navy)">k*</text></svg>`,
+   "Solowův model: produkce f(k) má klesající výnosy. Steady-state k* tam, kde úspory s·f(k) pokryjí právě obnovu kapitálu d·k."),
+ daddas:()=>diagWrap(`<svg viewBox="0 0 440 270">${axes("produkt (Y)","inflace π")}
+   <line x1="70" y1="62" x2="400" y2="208" class="curve" stroke="var(--orange)"/>
+   <text class="clabel" x="370" y="206" fill="var(--orange-d)">DAD</text>
+   <line x1="80" y1="212" x2="396" y2="66" class="curve" stroke="var(--navy)"/>
+   <text class="clabel" x="360" y="64" fill="var(--navy)">DAS (kr.)</text>
+   <line x1="256" y1="28" x2="256" y2="232" class="curve" stroke="var(--green-d)" stroke-dasharray="6 4"/>
+   <text class="clabel" x="262" y="44" fill="var(--green-d)">DAS (dl.)</text>
+   <text class="clabel" x="246" y="248" fill="var(--green-d)">Y*</text>
+   <circle cx="232" cy="148" r="4.5" fill="var(--red-d)"/></svg>`,
+   "Model DAD-DAS: vztah produkt ↔ inflace. Krátkodobá DAS roste, dlouhodobá je svislá na potenciálu Y*. Poptávkové vs nabídkové šoky posouvají příslušnou křivku.")
+};
+
+/* ---------- PLAN ---------- */
+function heroPlane(){return `<svg viewBox="0 0 460 300">
+   <defs><linearGradient id="gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BAD3D7" stop-opacity=".18"/><stop offset="1" stop-color="#BAD3D7" stop-opacity="0"/></linearGradient></defs>
+   ${[...Array(7)].map((_,i)=>`<line x1="${60+i*55}" y1="40" x2="${60+i*55}" y2="252" stroke="#ffffff" stroke-opacity=".06"/>`).join("")}
+   ${[...Array(4)].map((_,i)=>`<line x1="60" y1="${70+i*46}" x2="430" y2="${70+i*46}" stroke="#ffffff" stroke-opacity=".06"/>`).join("")}
+   <line x1="60" y1="40" x2="60" y2="252" stroke="#6F858C" stroke-width="2"/>
+   <line x1="60" y1="252" x2="432" y2="252" stroke="#6F858C" stroke-width="2"/>
+   <polygon points="256,145 256,252 60,252 60,145" fill="url(#gl)"/>
+   <line x1="92" y1="74" x2="404" y2="214" stroke="#BAD3D7" stroke-width="3" stroke-linecap="round"/>
+   <line x1="92" y1="216" x2="404" y2="80" stroke="#7F9AA1" stroke-width="3" stroke-linecap="round"/>
+   <circle cx="248" cy="146" r="6" fill="#fff"/><circle cx="248" cy="146" r="11" fill="#fff" fill-opacity=".18"/>
+   <text x="384" y="208" fill="#BAD3D7" font-family="JetBrains Mono,monospace" font-size="15" font-weight="700">IS</text>
+   <text x="384" y="92" fill="#7F9AA1" font-family="JetBrains Mono,monospace" font-size="15" font-weight="700">LM</text>
+   <text x="40" y="58" fill="#6F858C" font-family="JetBrains Mono,monospace" font-size="13">i</text>
+   <text x="416" y="270" fill="#6F858C" font-family="JetBrains Mono,monospace" font-size="13">Y</text></svg>`;}
+
+
+/* ---------- NAVIGACE ---------- */
+const SECTIONS=[
+ {id:"plan",label:"Plán a jak na to",sh:"00",grp:"start",ic:'<path d="M4 21V4m0 1 8 2-2 4 2 4-8-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'},
+ {id:"okruhy",label:"20 okruhů",sh:"20",grp:"uc",ic:'<path d="M4 5h7v6H4zM13 5h7v6h-7zM4 13h7v6H4zM13 13h7v6h-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'},
+ {id:"trenazer",label:"Trenažér ANO/NE",sh:"AN",grp:"uc",ic:'<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M8.5 12.5l2.2 2.2 4.8-4.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'},
+ {id:"zkouska",label:"Zkouška nanečisto",sh:"48",grp:"konec",ic:'<path d="M9 4h6v3H9zM6 5H5v15h14V5h-1" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 13l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'},
+ {id:"prehled",label:"Přehled & pasti",sh:"!",grp:"konec",ic:'<path d="M12 3 2.5 20h19zM12 10v4m0 3h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'}
+];
+
+/* ---------- OKRUHY (teorie) ---------- */
+const TOPICS=[
+{id:"pv",num:"01",pri:1,diagram:"keynes",title:"Model produkt–výdaje",
+ desc:"Krátkodobý model určení rovnovážného produktu při stálé cenové hladině. Rovnováha nastává, když se plánované výdaje rovnají skutečnému produktu.",
+ facts:[
+  "Předpokládá konstantní cenovou hladinu (nominální = reálný produkt) a nevyužité výrobní kapacity.",
+  "Ekonomika operuje pod potenciálním produktem (Y &lt; Y*) → existuje nedobrovolná nezaměstnanost (produkční mezera).",
+  "Rovnováha = rovnost plánovaných výdajů a skutečného produktu (žádné neplánované investice).",
+  "Vyšší autonomní výdaje → přes multiplikátor vyšší rovnovážný produkt; posun křivky AE = změna A, změna sklonu AE = změna c, t, m.",
+  "Z modelu se odvozuje křivka IS. Platí c + s = 1 (mezní sklon ke spotřebě + k úsporám)."],
+ traps:[
+  ["Model bere v úvahu trh peněz.","Nebere — to je jeho hlavní nedostatek; trh peněz přidává až model IS-LM."],
+  ["Vztahuje se ke krátkému i dlouhému období.","Je čistě krátkodobý (stálé P, nevyužité kapacity). Dlouhé období řeší DAD-DAS."],
+  ["Nezaměstnanost je v něm vždy nižší než přirozená míra.","Naopak — Y &lt; Y* znamená nezaměstnanost NAD přirozenou; absolutní „vždy“ je past."],
+  ["Vyšší mezní sklon k importu zvyšuje multiplikátor.","m je ve jmenovateli → vyšší m = větší únik = MENŠÍ multiplikátor."]]},
+
+{id:"spotreba",num:"02",pri:3,diagram:null,title:"Dlouhodobá spotřební funkce",
+ desc:"Vysvětlení dlouhodobé spotřeby: permanentní důchod (Friedman), mezičasová volba (Fisher), hypotéza životního cyklu (Modigliani).",
+ facts:[
+  "Dlouhodobá spotřební funkce má konstantní průměrný sklon ke spotřebě (APC) a vychází z počátku — bez autonomní spotřeby.",
+  "Friedman: spotřeba závisí jen na permanentním (trvalém) důchodu, ne na dočasných výkyvech.",
+  "Permanentní důchod závisí na bohatství a očekávaném důchodu z práce (lidský kapitál).",
+  "Hypotéza životního cyklu: lidé vyhlazují spotřebu — v mládí a v penzi C &gt; Y, ve středním věku C &lt; Y (spoří).",
+  "Fisher: mezičasová volba mezi současnou a budoucí spotřebou při mezičasovém rozpočtovém omezení."],
+ traps:[
+  ["Krátkodobá spotřební funkce vychází z počátku a nemá autonomní spotřebu.","To platí pro DLOUHODOBOU; krátkodobá má autonomní spotřebu (C = Ca + cY)."],
+  ["Podle permanentního důchodu reagují domácnosti na každou změnu příjmu stejně.","Reagují jen na změny vnímané jako TRVALÉ, ne na dočasné."],
+  ["Podle hypotézy životního cyklu spotřeba reaguje na předvídané výkyvy důchodu.","Naopak — spotřeba je vyhlazená a na předvídané změny nereaguje."]]},
+
+{id:"penize",num:"03",pri:1,diagram:"money",title:"Trh peněz (Keynes)",
+ desc:"Poptávka po penězích v keynesovském pojetí a nabídka peněz určená centrální bankou; dopady jejich změn na rovnováhu.",
+ facts:[
+  "Poptávka po penězích L = kY − hi je klesající funkcí úrokové míry.",
+  "k = citlivost poptávky na důchod, h = citlivost poptávky na úrokovou míru.",
+  "Roste-li úrok, subjekty preferují cenné papíry → poptávané množství peněz klesá.",
+  "Nabídka peněz je určována ČNB a nezávisí na úroku (exogenní pojetí → svislá křivka).",
+  "Keynesovy motivy držby peněz: transakční a spekulativní."],
+ traps:[
+  ["Nabízené množství peněz roste s úrokovou mírou (exogenní pojetí).","Exogenní nabídka je na úroku NEZÁVISLÁ (svislá); růst s úrokem je endogenní pojetí."],
+  ["Zvýšení cenové hladiny posouvá poptávku po penězích doprava.","Doleva → snížení rovnovážného bodu (reálné peníze klesají)."],
+  ["Nákup vládních cenných papírů centrální bankou snižuje nabídku peněz.","Zvyšuje ji — CB pouští peníze do oběhu (spolu se snížením PMR a úvěry bankám)."]]},
+
+{id:"kvanti",num:"04",pri:2,diagram:null,title:"Fisher · Cambridge · Friedman",
+ desc:"Tři pojetí poptávky po penězích: kvantitativní (Fisher), cambridgeská (Marshall) a Friedmanova.",
+ facts:[
+  "Fisherova rovnice směny MV = PY; rychlost obratu V je považována za stabilní.",
+  "Kvantitativní teorie: v dlouhém období ovlivňují změny M hlavně cenovou hladinu, ne reálné veličiny.",
+  "Cambridge (Marshall): MD = kYn, k = podíl důchodu držený v penězích; platí k = 1/V.",
+  "Friedman: poptávka po penězích je součást teorie portfolia (oběživo, vklady, CP, nemovitosti).",
+  "Friedman: v krátkém období změny M ovlivňují i reálné veličiny, v dlouhém jen cenovou hladinu. Inflace je peněžní jev."],
+ traps:[
+  ["U Fishera je rychlost obratu peněz V proměnlivá a nestabilní.","Fisher V považuje za STABILNÍ; proměnlivé V připouští spíš cambridgeská verze."],
+  ["Podle kvantitativní teorie růst peněžní zásoby trvale zvyšuje reálný produkt.","V dlouhém období se promítne do cen (inflace), ne do reálného produktu."],
+  ["Cambridgeský koeficient k se rovná rychlosti obratu peněz V.","k = 1/V (převrácená hodnota)."]]},
+
+{id:"modern",num:"05",pri:3,diagram:null,title:"Baumol–Tobin & Tobin",
+ desc:"Moderní keynesovské teorie: transakční poptávka (Baumolův–Tobinův model) a spekulativní poptávka (Tobinův model).",
+ facts:[
+  "Baumol–Tobin (transakční poptávka): aplikace teorie zásob; transakční poptávka je závislá na úrokové míře.",
+  "Vyšší úrok → vyšší náklady držby hotovosti (ušlý úrok) → drží se méně peněz, více výběrů.",
+  "Průměrná držba hotovosti MD = Y/2n; optimální počet výběrů minimalizuje celkové náklady.",
+  "Tobin (spekulativní poptávka): rizikově-výnosová volba portfolia.",
+  "Peníze v hotovosti jsou nevýnosné a nerizikové; dluhopisy nesou výnos i riziko (směrodatná odchylka výnosů)."],
+ traps:[
+  ["V Baumol–Tobin modelu je transakční poptávka po penězích nezávislá na úroku.","Právě naopak — je na úroku závislá (to je jádro modelu)."],
+  ["V Tobinově modelu jsou peníze v hotovosti výnosné a rizikové.","Peníze jsou nevýnosné a nerizikové; výnos i riziko nesou dluhopisy."]]},
+
+{id:"is",num:"06",pri:1,diagram:"islmbp",title:"IS-LM-BP · křivka IS",
+ desc:"Křivka IS: kombinace úrokové míry a produktu, při nichž je v rovnováze trh statků a služeb.",
+ facts:[
+  "IS je klesající: vyšší úrok → nižší investice → nižší produkt.",
+  "Fiskální expanze (↑G, ↑TR, ↓autonomní daně, optimistická očekávání) posouvá IS doprava.",
+  "Nižší citlivost investic na úrok (b) → strmější IS; b = 0 → svislá, b = ∞ → vodorovná.",
+  "Body nalevo od IS: AD &gt; AS (čerpání zásob); napravo: AS &gt; AD (hromadění zásob)."],
+ traps:[
+  ["Růst autonomních daní posouvá IS doprava.","Doleva — vyšší daně jsou fiskální restrikce."],
+  ["Čím vyšší citlivost investic na úrok, tím strmější IS.","Naopak — vyšší b dělá IS plošší; strmější je při nižším b."],
+  ["IS zachycuje rovnováhu na trhu peněz.","To je LM; IS je trh statků a služeb."]]},
+
+{id:"lm",num:"07",pri:1,diagram:"islmbp",title:"IS-LM-BP · křivka LM",
+ desc:"Křivka LM: kombinace úrokové míry a produktu, při nichž je v rovnováze trh peněz.",
+ facts:[
+  "Rovnice LM: M/P = kY − hi; LM je rostoucí (vyšší Y → vyšší poptávka po penězích → vyšší úrok).",
+  "Zvýšení nabídky peněz posouvá LM doprava, snížení doleva.",
+  "Past likvidity: LM vodorovná (h = ∞) → monetární politika je zcela neúčinná.",
+  "Body vlevo od LM: nabídka peněz &gt; poptávka; vpravo: poptávka &gt; nabídka."],
+ traps:[
+  ["Zvýšení peněžní zásoby posouvá LM doleva.","Doprava — víc peněz uvolňuje úrokovou míru."],
+  ["V pasti likvidity je monetární politika maximálně účinná.","Je zcela NEúčinná (vodorovná LM, h = ∞)."],
+  ["LM je klesající funkcí.","LM je ROSTOUCÍ."]]},
+
+{id:"bp",num:"08",pri:1,diagram:"islmbp",title:"IS-LM-BP · křivka BP",
+ desc:"Křivka BP: kombinace úrokové míry a produktu, při nichž je v rovnováze platební bilance.",
+ facts:[
+  "Tvar BP určuje míra kapitálové mobility a mezní sklon k importu.",
+  "Dokonalá mobilita → BP vodorovná; nulová mobilita → svislá; nedokonalá → rostoucí.",
+  "BP = NX + NCF; finanční účet (NCF) závisí na úrokovém diferenciálu (iD − iF).",
+  "Body vlevo od BP: přebytek PB; vpravo: deficit PB."],
+ traps:[
+  ["Při dokonalé kapitálové mobilitě je BP svislá.","Vodorovná; svislá je při NULOVÉ mobilitě."],
+  ["Znehodnocení domácí měny posouvá BP doleva.","Doprava (roste NX)."],
+  ["Body vpravo od BP znamenají přebytek platební bilance.","Deficit — vysoký důchod → vysoký import → nižší NX."]]},
+
+{id:"pb",num:"09",pri:2,diagram:null,title:"Platební bilance & mobilita",
+ desc:"Podstata a členění platební bilance; kapitálová mobilita a její dopad na tvar křivky BP.",
+ facts:[
+  "Platební bilance = statistický záznam transakcí mezi rezidenty a nerezidenty za období.",
+  "Běžný účet: zboží, služby, důchody, běžné transfery. Finanční účet: přímé (nad 10 %), portfoliové (pod 10 %), deriváty.",
+  "Kreditní položky přinášejí zahraniční měnu (vývoz zboží/služeb); debetní ji odčerpávají (dovoz).",
+  "Dokonalá kapitálová imobilita: žádné kapitálové toky, NCF = 0 (export = import).",
+  "Změna devizových rezerv = intervence centrální banky."],
+ traps:[
+  ["Dovoz zboží je kreditní položkou platební bilance.","Je DEBETNÍ (odčerpává zahraniční měnu); kreditní je vývoz."],
+  ["Při dokonalé kapitálové mobilitě je křivka BP svislá.","Vodorovná."],
+  ["Portfoliové investice znamenají podíl nad 10 % firmy.","Pod 10 %; nad 10 % jsou přímé investice."]]},
+
+{id:"kurzy",num:"10",pri:1,diagram:"islmbp",title:"Kurzy & účinnost politik",
+ desc:"Systém fixního a flexibilního kurzu; účinnost fiskální a monetární politiky v modelu IS-LM-BP.",
+ facts:[
+  "Fixní kurz + dokonalá mobilita: účinná FISKÁLNÍ politika, monetární neúčinná.",
+  "Flexibilní kurz + dokonalá mobilita: účinná MONETÁRNÍ politika, fiskální neúčinná.",
+  "Fixní kurz: CB musí intervencemi udržet kurz, čímž mění nabídku peněz.",
+  "Flexibilní kurz: kurz se přizpůsobuje, CB neintervenuje kvůli apreciaci/depreciaci."],
+ traps:[
+  ["Při fixním kurzu je monetární politika účinná.","Neúčinná; účinná je fiskální."],
+  ["Při flexibilním kurzu je fiskální politika účinná.","Neúčinná; účinná je monetární (vytěsnění přes kurz)."]]},
+
+{id:"mundell",num:"11",pri:1,diagram:"islmbp",title:"Mundell–Fleming",
+ desc:"IS-LM-BP s dokonalou kapitálovou mobilitou; účinnost fiskální a monetární politiky podle režimu kurzu.",
+ facts:[
+  "Dokonalá mobilita: mezinárodní aktiva jsou dokonalé substituty, bez kurzového rizika → i = i*.",
+  "Pevné kurzy: fiskální politika účinná, monetární neúčinná.",
+  "Flexibilní kurzy: fiskální neúčinná, monetární účinná."],
+ traps:[
+  ["V Mundell–Flemingově modelu s pevným kurzem je monetární politika účinná.","Neúčinná."],
+  ["Dokonalá kapitálová mobilita znamená i ≠ i*.","Znamená i = i* (vyrovnání úrokových měr)."]]},
+
+{id:"devizy",num:"12",pri:2,diagram:null,title:"Devizový trh & parity",
+ desc:"Měnový kurz, jeho zápis a determinanty; teorie parity kupních sil a parity úrokových měr.",
+ facts:[
+  "Měnový kurz = cena jedné měny v jednotkách druhé; přímý zápis = kolik domácí měny za jednotku cizí.",
+  "Apreciace (zhodnocení): ↑import → ↓HDP, ↓export → ↓HDP.",
+  "Depreciace (znehodnocení): ↑export → ↑HDP, ↑výnosy domácích investic v zahraničí.",
+  "Absolutní parita kupních sil: kurz = poměr cenových hladin; ERDI = E/PPP.",
+  "ERDI &gt; 1 → měna podhodnocená (tendence zhodnocovat). Relativní parita: změna kurzu ≈ rozdíl měr inflace."],
+ traps:[
+  ["Apreciace domácí měny podporuje export a zvyšuje HDP.","Apreciace export ZDRAŽUJE a tlumí → ↓HDP; export podporuje depreciace."],
+  ["ERDI &gt; 1 znamená nadhodnocenou měnu.","Podhodnocenou (s tendencí ke zhodnocení)."],
+  ["U čistě plovoucího kurzu centrální banka pravidelně intervenuje kvůli apreciaci.","U čistého floatu neintervenuje; intervence je u řízeného floatu."]]},
+
+{id:"dad",num:"13",pri:1,diagram:"daddas",title:"DAD-DAS · poptávka (DAD)",
+ desc:"Předpoklady modelu DAD-DAS a odvození dynamické agregátní poptávky; posuny DAD.",
+ facts:[
+  "DAD = výdaje subjektů při různých mírách inflace; je KLESAJÍCÍ.",
+  "Vyšší inflace a inflační očekávání → CB zvyšuje reálné úrokové sazby → klesají výdaje a produkt.",
+  "Posun DAD doprava: ↑G, ↑TR, ↑M, ↑spotřeba/investice, ↓daně, ↑NX."],
+ traps:[
+  ["DAD je rostoucí funkcí míry inflace.","Je KLESAJÍCÍ (vyšší inflace → přísnější MP → nižší výdaje)."],
+  ["Snížení daní posouvá DAD doleva.","Doprava (vyšší poptávka)."]]},
+
+{id:"das",num:"14",pri:1,diagram:"daddas",title:"DAD-DAS · nabídka (DAS)",
+ desc:"Dynamická agregátní nabídka: odvození, tvar v krátkém a dlouhém období, posuny DAS.",
+ facts:[
+  "DAS = produkce nabízená výrobci při různých mírách inflace.",
+  "Krátké období: DAS rostoucí, možná kladná i záporná mezera; růst inflačních očekávání posouvá DAS nahoru.",
+  "Dlouhé období: DAS svislá na úrovni potenciálního produktu (Y = Y*).",
+  "Rigidita cen/mezd: menu cost, koordinační selhání, klientské trhy, mzdové kontrakty, efektivnostní mzdy."],
+ traps:[
+  ["V dlouhém období je DAS vodorovná.","Je SVISLÁ (na Y*)."],
+  ["Krátkodobá DAS je svislá.","Krátkodobá je ROSTOUCÍ; svislá je dlouhodobá."]]},
+
+{id:"daddas",num:"15",pri:1,diagram:"daddas",title:"Rovnováha DAD-DAS & šoky",
+ desc:"Rovnováha v modelu DAD-DAS a reakce na poptávkové a nabídkové šoky.",
+ facts:[
+  "Rovnováha = průsečík DAD a DAS; skutečná inflace = očekávaná, žádné tlaky na změnu inflace.",
+  "Poptávkový šok: produkt i inflace se mění STEJNÝM směrem.",
+  "Nabídkový šok: produkt a inflace se mění OPAČNÝM směrem (negativní = stagflace).",
+  "Po odeznění dočasného šoku se ekonomika vrací na původní úroveň; TRVALÝ nabídkový šok mění potenciální produkt (posun LDAS)."],
+ traps:[
+  ["Negativní nabídkový šok zvyšuje produkt i inflaci.","Snižuje produkt a zvyšuje inflaci (opačný směr) — stagflace."],
+  ["Dočasný nabídkový šok trvale mění potenciální produkt.","Nemění; potenciál mění jen TRVALÝ nabídkový šok."]]},
+
+{id:"nezam",num:"16",pri:1,diagram:"phillips",title:"Nezaměstnanost & Phillips",
+ desc:"Nezaměstnanost a přirozená míra; Phillipsova křivka v krátkém a dlouhém období, rozšířená Phillipsova křivka.",
+ facts:[
+  "Míra nezaměstnanosti = nezaměstnaní / ekonomicky aktivní (pracovní síla) · 100.",
+  "Nezaměstnaný: nemá práci, aktivně ji hledá, je schopen nastoupit.",
+  "Přirozená míra = frikční + strukturální nezaměstnanost (cyklická do ní NEpatří).",
+  "Krátkodobá Phillipsova křivka: nepřímý vztah inflace a nezaměstnanosti.",
+  "Dlouhodobá Phillipsova křivka je svislá na přirozené míře (u*); u* ≈ stabilní inflace (NAIRU)."],
+ traps:[
+  ["Do přirozené míry nezaměstnanosti patří i cyklická nezaměstnanost.","Nepatří — jen frikční a strukturální."],
+  ["Jmenovatelem míry nezaměstnanosti je celé obyvatelstvo.","Je to pracovní síla (zaměstnaní + nezaměstnaní), ne celé obyvatelstvo."],
+  ["Dlouhodobá Phillipsova křivka je klesající.","Je SVISLÁ (na u*); klesající je krátkodobá."],
+  ["Studenti a nepracující důchodci se počítají mezi nezaměstnané.","Patří mezi ekonomicky NEAKTIVNÍ."]]},
+
+{id:"prace",num:"17",pri:2,diagram:"labor",title:"Trh práce & Okunův zákon",
+ desc:"Modely trhu práce (peněžní iluze, reálné cykly) a Okunův zákon.",
+ facts:[
+  "Okunův zákon: růst reálného HDP o ~2 % nad trend → pokles nezaměstnanosti o ~1 p.b. (a naopak).",
+  "Model peněžní iluze: krátkodobá nerovnováha z chybného odhadu cenové hladiny; dlouhodobě je Phillips svislá.",
+  "Teorie reálných cyklů: ceny a mzdy pružné, výkyvy jsou reakcí na nabídkové/poptávkové šoky.",
+  "Pozitivní šok: pokles cen surovin, technologický pokrok; negativní: růst cen surovin, katastrofa."],
+ traps:[
+  ["Podle Okunova zákona nemá růst nezaměstnanosti nad přirozenou míru vliv na HDP.","Je spojen s poklesem HDP zhruba o 2 % na každý procentní bod."],
+  ["V modelu peněžní iluze existuje dlouhodobá substituce mezi inflací a nezaměstnaností.","V dlouhém období neexistuje (Phillips svislá); jen krátkodobě."]]},
+
+{id:"inflace",num:"18",pri:2,diagram:null,title:"Inflace & cenové indexy",
+ desc:"Inflace, cenové indexy (deflátor HDP, CPI, PPI) a metody léčení inflace.",
+ facts:[
+  "Inflace = dlouhodobý růst celkové cenové hladiny (ne sezónní, cyklické ani inovační změny).",
+  "Deflátor HDP zahrnuje všechny statky v produktu; CPI sleduje spotřební koš domácnosti s fixními vahami.",
+  "Reálný HDP se mění jen množstvím; nominální množstvím i cenami.",
+  "Protiinflační strategie jsou většinou restriktivní; cold turkey = rychlé a razantní, gradualistická = postupné.",
+  "PPI (ceny výrobců) předbíhá vývoj CPI."],
+ traps:[
+  ["Reálný HDP se mění cenami i množstvím.","Jen MNOŽSTVÍM (je ve stálých cenách); cenami i množstvím se mění nominální."],
+  ["Metoda cold turkey snižuje inflaci postupně po malých krocích.","To je gradualistická; cold turkey je razantní a rychlá."],
+  ["Sezónní kolísání cen se považuje za inflaci.","Nepovažuje — inflace je dlouhodobý jev."]]},
+
+{id:"fiskal",num:"19",pri:1,diagram:null,title:"Rozpočty & fiskální politika",
+ desc:"Veřejné rozpočty, nástroje fiskální politiky, dopady v krátkém a dlouhém období, státní dluh.",
+ facts:[
+  "Automatické (vestavěné) stabilizátory působí samy: progresivní zdanění, podpory v nezaměstnanosti.",
+  "Diskreční politika = jednorázová rozhodnutí vlády (změny sazeb daní, transferů).",
+  "Expanzivní FP: ↓daně, ↑vládní nákupy, ↑transfery; restriktivní opačně.",
+  "Fiskální expanze krátkodobě: ↑produkt, ↓nezaměstnanost, ↑cenová hladina; dlouhodobě JEN ↑cenová hladina.",
+  "Bariéry účinnosti: časová zpoždění, efekt vytěsňování, veřejný dluh. Státní dluh se financuje dluhopisy (rolování)."],
+ traps:[
+  ["Progresivní zdanění a podpory v nezaměstnanosti jsou nástroje diskreční politiky.","Jsou to AUTOMATICKÉ stabilizátory (působí bez rozhodnutí vlády)."],
+  ["Jediným dopadem fiskální expanze v dlouhém období je růst reálného produktu.","Jen růst CENOVÉ hladiny; produkt se vrací na potenciál."],
+  ["Efekt vytěsňování zvyšuje účinnost fiskální politiky.","Snižuje ji — je to bariéra účinnosti."]]},
+
+{id:"rust",num:"20",pri:2,diagram:"solow",title:"Solowův model & růst",
+ desc:"Teorie hospodářského růstu, Solowův model a dlouhodobý ekonomický růst.",
+ facts:[
+  "Ekonomický růst = růst potenciálního produktu (posun LAS doprava), ne krátkodobé cyklické kolísání.",
+  "Solow: dlouhodobý model s EXOGENNÍM technologickým pokrokem; základ = produkční funkce Y = A·f(L,K).",
+  "Přírůstek kapitálu ΔK = I − dK; stálý stav (steady state) = investice právě nahrazují opotřebení.",
+  "Stálý stav je tím vyšší, čím vyšší míra úspor s a nižší míra opotřebení d.",
+  "I &gt; dK → akumulace kapitálu; I &lt; dK → redukce. Endogenní model (AK) technologii vysvětluje uvnitř."],
+ traps:[
+  ["Solowův model vysvětluje příčiny technologického pokroku.","Nevysvětluje — bere ho jako EXOGENNÍ (jeho hlavní slabina); proto endogenní teorie."],
+  ["Ekonomický růst znamená krátkodobé cyklické zvýšení HDP nad potenciál.","To je cyklická expanze; růst = zvýšení POTENCIÁLNÍHO produktu."],
+  ["Vyšší míra opotřebení kapitálu zvyšuje stálý stav kapitálu na pracovníka.","Snižuje ho; stálý stav roste s vyšší mírou úspor a nižším opotřebením."]]}
+];
+
+/* ---------- BANKA TVRZENÍ (predikce ze 24 autotestů + ověřená fakta) ---------- */
+const BLOCKS=[
+/* ===== Produkt–výdaje ===== */
+{topic:"pv",stem:"V případě modelu produkt-výdaje platí, že:",items:[
+ {t:"mezní sklon ke spotřebě s růstem důchodu klesá",a:false,why:"V modelu je MPC konstantní (lineární spotřební funkce) — s důchodem se nemění."},
+ {t:"průměrný sklon ke spotřebě (APC) je vyšší než 1",a:false,why:"Jakmile důchod přesáhne bod zvratu, APC &lt; 1 (část se spoří)."},
+ {t:"je konstruován za předpokladu existence nevyužitých zdrojů výrobních faktorů",a:true,why:"Ano — nevyužité kapacity, proto roste produkt bez růstu cen."},
+ {t:"je-li skutečný produkt vyšší než rovnovážný, dochází k hromadění zásob",a:true,why:"Skutečný &gt; plánované výdaje → neprodané zboží → hromadění zásob."}]},
+{topic:"pv",stem:"V případě modelu produkt-výdaje platí, že:",items:[
+ {t:"mezní sklon k úsporám se s růstem důchodu nemění",a:true,why:"MPS je konstantní (lineární funkce), stejně jako MPC."},
+ {t:"součet průměrného sklonu k úsporám a průměrného sklonu ke spotřebě je roven jedné",a:true,why:"APC + APS = 1 (disponibilní důchod = spotřeba + úspory)."},
+ {t:"je konstruován za předpokladu, že skutečný produkt je nižší než potenciální",a:true,why:"Ano, Y &lt; Y* (nevyužité zdroje)."},
+ {t:"výše transferových plateb ovlivňuje výši autonomních výdajů",a:true,why:"Transfery přes +c·TR zvyšují autonomní výdaje."}]},
+{topic:"pv",stem:"V modelu produkt-výdaje v otevřené ekonomice platí, že:",items:[
+ {t:"výdajový multiplikátor je závislý na výši mezního sklonu k importu",a:true,why:"m je ve jmenovateli; vyšší m → menší multiplikátor."},
+ {t:"výše rovnovážného produktu je závislá na výši míry inflace",a:false,why:"Model má fixní cenovou hladinu — inflace v něm nehraje roli."},
+ {t:"při zvýšení autonomních investic se křivka plánovaných výdajů posune rovnoběžně nahoru a rovnovážný produkt se zvýší",a:true,why:"Růst autonomní složky = paralelní posun AE nahoru → vyšší Y."},
+ {t:"průměrný sklon k úsporám je poměrem výše úspor a výše důchodu",a:true,why:"APS = úspory / důchod (definice)."}]},
+{topic:"pv",stem:"V modelu produkt-výdaje v otevřené ekonomice platí, že:",items:[
+ {t:"míra nezaměstnanosti je v ekonomice vždy nižší než přirozená míra",a:false,why:"Y &lt; Y* → nezaměstnanost NAD přirozenou; „vždy“ je past."},
+ {t:"model se vztahuje ke krátkému i dlouhému období",a:false,why:"Je čistě krátkodobý (fixní ceny, nevyužité kapacity)."},
+ {t:"snížení exportu automobilů vede k poklesu rovnovážného produktu",a:true,why:"Export je autonomní výdaj; ↓X → ↓Y."},
+ {t:"snížení mezního sklonu k importu vede ke zvýšení rovnovážného produktu",a:true,why:"Nižší m → vyšší multiplikátor → vyšší Y."}]},
+{topic:"pv",stem:"O grafu modelu 45° platí (změna → posun nebo sklon AE):",items:[
+ {t:"zvýšení autonomních investic firem posune křivku AE rovnoběžně nahoru",a:true,why:"Změna autonomní složky = paralelní posun."},
+ {t:"zvýšení mezního sklonu k importu způsobí, že křivka AE bude plošší",a:true,why:"m mění SKLON AE (plošší), ne posun."},
+ {t:"zavedení milionářské daně (vyšší sazba daně) posune AE rovnoběžně nahoru",a:false,why:"Vyšší sazba mění SKLON (AE plošší), navíc je to restrikce — ne posun nahoru."},
+ {t:"snížení výdajů na vědu a výzkum posune AE dolů",a:true,why:"Nižší autonomní výdaje → paralelní posun dolů."}]},
+/* ===== Dlouhodobá spotřební funkce ===== */
+{topic:"spotreba",stem:"O dlouhodobé a krátkodobé spotřební funkci platí:",items:[
+ {t:"dlouhodobá spotřební funkce má konstantní APC a prochází počátkem",a:true,why:"Bez autonomní spotřeby, APC konstantní."},
+ {t:"krátkodobá spotřební funkce prochází počátkem a nemá autonomní spotřebu",a:false,why:"To platí pro DLOUHODOBOU; krátkodobá má autonomní spotřebu (C = Ca + cYd)."},
+ {t:"v krátkém období je průměrný sklon ke spotřebě vyšší než mezní",a:true,why:"Kvůli autonomní spotřebě je APC &gt; MPC."},
+ {t:"průměrný sklon ke spotřebě v krátkém období s růstem důchodu klesá",a:true,why:"Autonomní spotřeba se „rozpouští“ → APC klesá."}]},
+{topic:"spotreba",stem:"V případě hypotézy permanentního důchodu (Friedman) platí:",items:[
+ {t:"spotřeba závisí na permanentním (trvalém) důchodu, ne na přechodných výkyvech",a:true,why:"Rozhoduje trvalá složka důchodu."},
+ {t:"domácnosti reagují stejně na trvalé i jednorázové zvýšení příjmu",a:false,why:"Na přechodné výkyvy spotřeba reaguje jen málo."},
+ {t:"permanentní důchod zahrnuje i výnos z lidského kapitálu",a:true,why:"Bohatství + očekávaný příjem z práce."},
+ {t:"průměrný sklon ke spotřebě z permanentního důchodu je dlouhodobě stabilní",a:true,why:"Proto dlouhodobá APC konstantní."}]},
+{topic:"spotreba",stem:"O Fisherově mezičasové volbě a hypotéze životního cyklu platí:",items:[
+ {t:"Fisherův model popisuje volbu mezi současnou a budoucí spotřebou při mezičasovém rozpočtovém omezení",a:true,why:"Jádro mezičasové volby."},
+ {t:"podle hypotézy životního cyklu lidé v produktivním věku spoří a v penzi úspory rozpouštějí",a:true,why:"Vyhlazování spotřeby přes život."},
+ {t:"podle hypotézy životního cyklu spotřeba kopíruje výkyvy běžného důchodu",a:false,why:"Naopak — spotřeba je VYHLAZENÁ, běžný důchod kolísá víc."},
+ {t:"růst úrokové míry má ve Fisherově modelu na spotřebu jednoznačně pozitivní vliv",a:false,why:"Efekt je nejednoznačný (substituční vs důchodový; věřitel × dlužník)."}]},
+/* ===== Trh peněz (Keynes) ===== */
+{topic:"penize",stem:"Na trhu peněz platí:",items:[
+ {t:"s růstem poptávky po penězích roste rovnovážná úroková míra",a:true,why:"Vyšší poptávka po penězích → vyšší úrok."},
+ {t:"za předpokladu exogenního pojetí je křivka nabídky peněz svislá",a:true,why:"Nabídku určuje ČNB, je nezávislá na úroku → vertikální."},
+ {t:"zvýšení sazby povinných minimálních rezerv (PMR) vede ke snížení rovnovážné úrokové míry",a:false,why:"Vyšší PMR → nižší nabídka peněz → VYŠŠÍ úrok."},
+ {t:"mezi motivy držby peněz (preference likvidity) patří motiv transakční",a:true,why:"Transakční, opatrnostní, spekulativní."}]},
+{topic:"penize",stem:"Na trhu peněz platí:",items:[
+ {t:"s růstem nabídky peněz klesá rovnovážná úroková míra",a:true,why:"Více peněz → nižší úrok."},
+ {t:"za předpokladu exogenního pojetí je křivka poptávky po penězích svislá",a:false,why:"Svislá je NABÍDKA; poptávka je klesající."},
+ {t:"snížení diskontní sazby centrální bankou vede ke snížení rovnovážné úrokové míry",a:true,why:"Nižší diskont = uvolnění → nižší úrok."},
+ {t:"mezi keynesovské motivy držby peněz patří „motiv risku“",a:false,why:"Motivy jsou transakční, opatrnostní a spekulativní — žádný „motiv risku“."}]},
+{topic:"penize",stem:"O keynesiánské poptávce po penězích a nabídce peněz platí:",items:[
+ {t:"koeficient „h“ vyjadřuje citlivost poptávky po penězích na změnu úrokové míry",a:true,why:"h = citlivost na úrok, k = citlivost na důchod."},
+ {t:"klesající průběh poptávky po penězích souvisí se spekulativním motivem",a:true,why:"Spekulativní motiv váže poptávku na úrok."},
+ {t:"poptávka po penězích se zvyšuje s růstem důchodu",a:true,why:"Transakční motiv (kY)."},
+ {t:"v případě endogenního pojetí je křivka nabídky peněz rostoucí",a:true,why:"Endogenní nabídka reaguje na úrok (na rozdíl od svislé exogenní)."}]},
+{topic:"penize",stem:"O nástrojích centrální banky a nabídce peněz platí:",items:[
+ {t:"nákup dluhopisů (cenných papírů) centrální bankou zvyšuje nabídku peněz",a:true,why:"CB pouští peníze do oběhu."},
+ {t:"nákup zahraniční měny centrální bankou snižuje nabídku peněz",a:false,why:"Naopak — ZVYŠUJE (CB vydává korunu za devizy)."},
+ {t:"jednoduchý peněžní multiplikátor se odvíjí od sazby povinných minimálních rezerv",a:true,why:"Multiplikátor depozit ≈ 1/PMR."},
+ {t:"skrz sazbu PMR ovlivňuje centrální banka úroveň multiplikace depozit",a:true,why:"Vyšší PMR → menší multiplikace."}]},
+/* ===== ČNB / aktuálie (měnová politika) ===== */
+{topic:"penize",stem:"O České národní bance platí (aktuální stav):",items:[
+ {t:"guvernérem ČNB je Aleš Michl",a:true,why:"Guvernérem od července 2022, mandát do roku 2028."},
+ {t:"guvernéra ČNB jmenuje předseda vlády (premiér)",a:false,why:"Jmenuje ho PREZIDENT republiky, na 6 let."},
+ {t:"mezi rezervní aktiva ČNB patří zlaté rezervy i devizy (eura, dolary)",a:true,why:"Devizové rezervy + zlato."},
+ {t:"mezi funkce ČNB patří emise (tisk) bankovek a ražba mincí české koruny",a:true,why:"ČNB je emisní banka."}]},
+{topic:"inflace",stem:"O cílování inflace a měnové politice ČNB platí:",items:[
+ {t:"inflační cíl ČNB je 2 % s tolerančním pásmem ± 1 procentní bod",a:true,why:"Cíl 2 %, pásmo ±1 p.b."},
+ {t:"inflační cíl ČNB je stanoven na meziroční přírůstek indexu spotřebitelských cen (CPI)",a:true,why:"Na CPI, ne na deflátor HDP."},
+ {t:"pro snižování pádivé inflace centrální banka zvyšuje úrokové sazby",a:true,why:"Restrikce tlumí poptávku a inflaci."},
+ {t:"první zemí, která formálně zavedla cílování inflace, bylo Česko",a:false,why:"Byl to Nový Zéland (1990); ČNB zavedla cílování 1998."}]},
+/* ===== Fisher / Cambridge / Friedman ===== */
+{topic:"kvanti",stem:"O kvantitativní teorii peněz a cambridgeské verzi platí:",items:[
+ {t:"dle kvantitativní teorie vede zvýšení nabídky peněz ke zvýšení cenové hladiny",a:true,why:"V dlouhém období se M promítne do cen."},
+ {t:"Fisherova rovnice směny má tvar M·V = P·Y",a:true,why:"Rovnice směny."},
+ {t:"cambridgeský koeficient k se rovná důchodové rychlosti obratu peněz",a:false,why:"k = 1/V (převrácená hodnota rychlosti obratu)."},
+ {t:"Fisher považuje rychlost obratu peněz za stabilní",a:true,why:"Stabilní V je předpoklad kvantitativní teorie."}]},
+{topic:"kvanti",stem:"O Friedmanově přístupu k poptávce po penězích platí:",items:[
+ {t:"dle Friedmana je jedinou konečnou příčinou inflace nadměrný růst peněžní zásoby",a:true,why:"Inflace je peněžní jev."},
+ {t:"Friedmanova poptávka po penězích je součástí teorie portfolia (peníze, obligace, akcie, lidský i nelidský kapitál)",a:true,why:"Portfoliový přístup."},
+ {t:"dle Friedmana jsou peníze neutrální i v krátkém období (1–2 roky)",a:false,why:"V KRÁTKÉM období mají reálné účinky; neutrální až v DLOUHÉM."},
+ {t:"Friedmanova poptávka po penězích závisí na permanentním důchodu",a:true,why:"Ne na běžném, ale na trvalém důchodu."}]},
+{topic:"kvanti",stem:"Porovnání pojetí poptávky po penězích — platí:",items:[
+ {t:"Keynesova poptávka po penězích je významně závislá na úrokové míře",a:true,why:"Spekulativní motiv."},
+ {t:"podle Cambridgeské a klasické teorie je důchodová rychlost obratu peněz stabilní",a:true,why:"Stabilní V."},
+ {t:"Keynesova poptávka po penězích je naprosto stabilní stejně jako rychlost obratu peněz",a:false,why:"Naopak — Keynes zdůrazňuje její nestabilitu (spekulativní poptávka)."},
+ {t:"Cambridgeská verze je provázána s Keynesovými motivy držby peněz",a:true,why:"Zárodek preference likvidity."}]},
+/* ===== Baumol–Tobin & Tobin ===== */
+{topic:"modern",stem:"O Baumolově–Tobinově modelu transakční poptávky platí:",items:[
+ {t:"transakční poptávka po penězích je závislá na úrokové míře",a:true,why:"Vyšší úrok = vyšší náklady držby hotovosti."},
+ {t:"model je aplikací teorie zásob",a:true,why:"Optimalizace nákladů držby a převodu."},
+ {t:"vyšší úroková míra vede k držbě většího množství hotovosti",a:false,why:"Naopak — méně hotovosti, více výběrů."},
+ {t:"průměrná držba hotovosti se s počtem výběrů snižuje",a:true,why:"MD = Y/2n; více výběrů → nižší průměrný zůstatek."}]},
+{topic:"modern",stem:"O Tobinově modelu spekulativní poptávky po penězích platí:",items:[
+ {t:"model vychází z volby mezi výnosem a rizikem (teorie portfolia)",a:true,why:"Rizikově-výnosová volba."},
+ {t:"peníze v hotovosti jsou nevýnosné a nerizikové",a:true,why:"Bez výnosu a bez rizika."},
+ {t:"dluhopisy jsou v modelu nevýnosné, ale rizikové",a:false,why:"Dluhopisy jsou VÝNOSNÉ i rizikové."},
+ {t:"vyšší averze k riziku vede k větší držbě peněz na úkor dluhopisů",a:true,why:"Bezpečnější portfolio."}]},
+/* ===== Křivka IS ===== */
+{topic:"is",stem:"O křivce IS v otevřené ekonomice platí:",items:[
+ {t:"IS zachycuje kombinace úrokové míry a produktu, kdy je v rovnováze trh statků a služeb",a:true,why:"Definice IS."},
+ {t:"IS má tvar Y = α·(A − b·i + v·R)",a:true,why:"Citlivost na úrok (−b·i) a na kurz (+v·R)."},
+ {t:"čím je parametr „b“ (citlivost investic na úrok) vyšší, tím je IS strmější",a:false,why:"Vyšší b → IS PLOŠŠÍ."},
+ {t:"zvýšení transferových výdajů vlády vede k posunu IS doprava",a:true,why:"Fiskální expanze."}]},
+{topic:"is",stem:"O posunech a sklonu křivky IS platí:",items:[
+ {t:"fiskální expanze posouvá křivku IS doprava",a:true,why:"↑G, ↑TR, ↓daně."},
+ {t:"fiskální restrikce posouvá křivku IS doleva",a:true,why:"Opak expanze."},
+ {t:"zvýšení mezního sklonu k importu způsobí, že IS bude strmější",a:true,why:"Vyšší m → menší multiplikátor → strmější IS."},
+ {t:"optimistická očekávání ekonomických subjektů posouvají IS doleva",a:false,why:"Optimismus → vyšší výdaje → IS DOPRAVA."}]},
+{topic:"is",stem:"Určete dopad na křivku IS:",items:[
+ {t:"růst autonomní spotřeby posouvá IS doprava",a:true,why:"Vyšší autonomní výdaje."},
+ {t:"pokles čistého exportu posouvá IS doleva",a:true,why:"Nižší poptávka po domácí produkci."},
+ {t:"zvýšení výdajového multiplikátoru činí IS plošší",a:true,why:"Větší multiplikátor → plošší IS."},
+ {t:"znehodnocení (depreciace) domácí měny posouvá IS doleva",a:false,why:"Depreciace → vyšší NX → IS DOPRAVA."}]},
+{topic:"is",stem:"O křivce IS a bodech mimo ni platí:",items:[
+ {t:"v bodech napravo od IS je agregátní nabídka vyšší než poptávka (hromadění zásob)",a:true,why:"AS &gt; AD → hromadění."},
+ {t:"v bodech nalevo od IS dochází k neplánovanému čerpání zásob",a:true,why:"AD &gt; AS → čerpání."},
+ {t:"výdajový multiplikátor pro určení IS je tím větší, čím větší je mezní sklon k importu",a:false,why:"Vyšší m → MENŠÍ multiplikátor."},
+ {t:"křivka IS je klesající",a:true,why:"Vyšší úrok → nižší investice → nižší produkt."}]},
+/* ===== Křivka LM ===== */
+{topic:"lm",stem:"O křivce LM platí:",items:[
+ {t:"LM zachycuje kombinace úrokové míry a produktu, kdy je v rovnováze trh peněz",a:true,why:"Definice LM."},
+ {t:"LM může být horizontální (past likvidity)",a:true,why:"h = ∞ → vodorovná LM."},
+ {t:"LM zachycuje rovnováhu na trhu ostatních finančních aktiv",a:false,why:"LM = trh PENĚZ."},
+ {t:"křivka LM je rostoucí",a:true,why:"Vyšší Y → vyšší poptávka po penězích → vyšší úrok."}]},
+{topic:"lm",stem:"O posunech a sklonu křivky LM platí:",items:[
+ {t:"zvýšení nabídky peněz posouvá LM doprava",a:true,why:"Více peněz uvolňuje úrok."},
+ {t:"zvýšení sazby PMR posouvá LM doleva",a:true,why:"Nižší nabídka peněz → LM doleva."},
+ {t:"monetární expanze posouvá LM doleva",a:false,why:"Expanze → více peněz → LM DOPRAVA."},
+ {t:"snížení citlivosti poptávky po penězích na úrok (h) činí LM strmější",a:true,why:"Nižší h → strmější LM."}]},
+{topic:"lm",stem:"O bodech mimo LM a o pasti likvidity platí:",items:[
+ {t:"v bodech napravo od LM převyšuje poptávka po penězích nabídku peněz",a:true,why:"Vysoký Y → vysoká poptávka po penězích."},
+ {t:"v bodech nalevo od LM nabídka peněz převyšuje poptávku",a:true,why:"Opak."},
+ {t:"v pasti likvidity (LM horizontální) je monetární politika maximálně účinná",a:false,why:"Je zcela NEúčinná."},
+ {t:"snížení citlivosti poptávky po penězích na důchod (k) činí LM plošší",a:true,why:"Nižší k → plošší LM."}]},
+/* ===== Křivka BP / mobilita ===== */
+{topic:"bp",stem:"O křivce BP a kapitálové mobilitě platí:",items:[
+ {t:"BP zachycuje kombinace úrokové míry a produktu, kdy je v rovnováze platební bilance",a:true,why:"Definice BP."},
+ {t:"při dokonalé kapitálové mobilitě je BP vodorovná",a:true,why:"i = i* → vodorovná."},
+ {t:"při dokonalé kapitálové imobilitě (nulové mobilitě) je BP vodorovná",a:false,why:"Při nulové mobilitě je SVISLÁ."},
+ {t:"tvar BP určuje míra kapitálové mobility a mezní sklon k importu",a:true,why:"Dva faktory sklonu BP."}]},
+{topic:"bp",stem:"O posunech a polohách u křivky BP platí:",items:[
+ {t:"znehodnocení (depreciace) domácí měny posouvá BP doprava",a:true,why:"Roste NX → BP doprava."},
+ {t:"v bodech napravo od BP je platební bilance v deficitu",a:true,why:"Vysoký Y → vysoký import → deficit."},
+ {t:"v bodech nalevo od BP je platební bilance v přebytku",a:true,why:"Opak."},
+ {t:"čím nižší je kapitálová mobilita, tím je BP plošší",a:false,why:"Nižší mobilita → STRMĚJŠÍ BP (až svislá při nulové)."}]},
+{topic:"bp",stem:"O složkách a sklonu BP platí:",items:[
+ {t:"saldo BP zohledňuje čistý export i čistý pohyb kapitálu",a:true,why:"BP = NX + saldo finančního účtu."},
+ {t:"finanční účet závisí na úrokovém diferenciálu (rozdílu domácí a zahraniční úrokové míry)",a:true,why:"Kapitál jde za vyšším výnosem."},
+ {t:"při dokonalé mobilitě platí, že domácí úroková míra se rovná zahraniční (i = i*)",a:true,why:"Vyrovnání úroků."},
+ {t:"vyšší domácí úroková míra (nad zahraniční) způsobuje odliv kapitálu",a:false,why:"Naopak — PŘÍLIV kapitálu."}]},
+/* ===== Platební bilance ===== */
+{topic:"pb",stem:"O platební bilanci platí:",items:[
+ {t:"je to statistický přehled ekonomických transakcí mezi rezidenty a zbytkem světa za období",a:true,why:"Definice PB."},
+ {t:"je sestavována na principu jednoduchého účetnictví",a:false,why:"Na principu PODVOJNÉHO účetnictví (kreditně i debetně)."},
+ {t:"je-li export vyšší než import, je běžný účet v přebytku",a:true,why:"Kladné saldo."},
+ {t:"je-li import vyšší než export, je běžný účet v přebytku",a:false,why:"V DEFICITU."}]},
+{topic:"pb",stem:"O účtech platební bilance platí:",items:[
+ {t:"běžný účet zahrnuje pohyb zboží, služeb a důchodů",a:true,why:"Složky běžného účtu."},
+ {t:"na běžném účtu je na straně kreditní započítáván import zboží",a:false,why:"Import je DEBETNÍ (odčerpává devizy); kreditní je export."},
+ {t:"finanční účet zahrnuje přímé a portfoliové investice a změnu devizových rezerv",a:true,why:"Složky finančního účtu."},
+ {t:"kapitálový účet zahrnuje promíjení dluhů, převody majetku migrantů a čerpání z fondů EU",a:true,why:"Typické položky kapitálového účtu."}]},
+{topic:"pb",stem:"O navazujících makroagregátech platí:",items:[
+ {t:"hrubý národní důchod (HND) je HDP zvýšený o čisté důchody rezidentů ze zahraničí",a:true,why:"HND = HDP + čisté důchody ze zahraničí."},
+ {t:"hrubý národní důchod je vždy vyšší než hrubý domácí produkt",a:false,why:"Může být i nižší — podle salda důchodů."},
+ {t:"čisté daně lze určit jako daně snížené o transfery (subvence)",a:true,why:"Čisté daně = daně − transfery."},
+ {t:"saldo státního rozpočtu lze zjednodušeně vyjádřit jako BS = Ta + t·Y − TR − G",a:true,why:"Příjmy (daně) minus výdaje (transfery, nákupy)."}]},
+/* ===== Kurzy & účinnost politik ===== */
+{topic:"kurzy",stem:"O účinnosti politik v modelu IS-LM-BP (dokonalá mobilita) platí:",items:[
+ {t:"při fixním kurzu je účinná fiskální politika a monetární je neúčinná",a:true,why:"Fixní kurz → fiskální účinná."},
+ {t:"při flexibilním kurzu je účinná monetární politika a fiskální je neúčinná",a:true,why:"Floating → monetární účinná."},
+ {t:"při fixním kurzu je monetární politika maximálně účinná",a:false,why:"Neúčinná — intervence vrátí nabídku peněz zpět."},
+ {t:"při flexibilním kurzu je fiskální expanze plně účinná",a:false,why:"Neúčinná — vytěsnění přes kurz."}]},
+{topic:"kurzy",stem:"O kurzových režimech platí:",items:[
+ {t:"při fixním kurzu musí centrální banka intervenovat, čímž mění nabídku peněz",a:true,why:"Udržení kurzu mění M."},
+ {t:"při čistě flexibilním kurzu centrální banka kvůli udržení kurzu neintervenuje",a:true,why:"Kurz se přizpůsobuje sám."},
+ {t:"fiskální expanze při flexibilním kurzu vede k apreciaci domácí měny",a:true,why:"↑úrok → příliv kapitálu → apreciace (vytěsnění NX)."},
+ {t:"monetární expanze při flexibilním kurzu vede k apreciaci domácí měny",a:false,why:"Vede k DEPRECIACI (↓úrok → odliv → oslabení → ↑NX)."}]},
+{topic:"kurzy",stem:"Doplň účinnost politiky (dokonalá mobilita):",items:[
+ {t:"fiskální politika při fixním kurzu je zcela účinná",a:true,why:"Maximální účinnost."},
+ {t:"monetární politika při fixním kurzu je zcela neúčinná",a:true,why:"Vytěsněna intervencí."},
+ {t:"monetární politika při flexibilním kurzu je zcela neúčinná",a:false,why:"Je zcela ÚČINNÁ."},
+ {t:"fiskální politika při flexibilním kurzu je zcela neúčinná",a:true,why:"Vytěsněna kurzem."}]},
+/* ===== Mundell–Fleming ===== */
+{topic:"mundell",stem:"O Mundellově–Flemingově modelu platí:",items:[
+ {t:"model předpokládá dokonalou kapitálovou mobilitu (i = i*)",a:true,why:"Klíčový předpoklad."},
+ {t:"při pevném kurzu je fiskální politika účinná",a:true,why:"Fix → fiskální účinná."},
+ {t:"při pevném kurzu je monetární politika účinná",a:false,why:"Neúčinná."},
+ {t:"při plovoucím kurzu je monetární politika účinná",a:true,why:"Floating → monetární účinná."}]},
+{topic:"mundell",stem:"O dokonalé kapitálové mobilitě (Mundell-Fleming) platí:",items:[
+ {t:"mezinárodní aktiva jsou dokonalými substituty bez kurzového rizika",a:true,why:"Proto i = i*."},
+ {t:"domácí úroková míra je vázána na zahraniční (i = i*)",a:true,why:"Vyrovnání úroků."},
+ {t:"BP křivka je při dokonalé mobilitě svislá",a:false,why:"Vodorovná (na úrovni i = i*)."},
+ {t:"při plovoucím kurzu je fiskální politika neúčinná",a:true,why:"Vytěsnění přes kurz."}]},
+/* ===== Devizový trh & parity ===== */
+{topic:"devizy",stem:"O devizovém trhu platí (poptávka po devizách × nabídka deviz):",items:[
+ {t:"poptávka po devizách je klesající funkcí měnového kurzu",a:true,why:"Klesající poptávka."},
+ {t:"nabídka deviz je tvořena exportem statků a služeb (vše, co do země přináší devizy)",a:true,why:"Export = příliv deviz = nabídka."},
+ {t:"poptávka po devizách je tvořena exportem statků a služeb",a:false,why:"Export = NABÍDKA deviz; poptávku tvoří import (odliv)."},
+ {t:"nabídka deviz odpovídá kreditním položkám platební bilance",a:true,why:"Kreditní = příliv deviz."}]},
+{topic:"devizy",stem:"O měnovém kurzu platí:",items:[
+ {t:"přímý zápis kurzu udává, kolik jednotek domácí měny stojí jednotka zahraniční měny",a:true,why:"Přímý (cenový) zápis."},
+ {t:"apreciace (zhodnocení) domácí měny zlevňuje dovoz a zdražuje vývoz",a:true,why:"Silnější měna."},
+ {t:"depreciace (znehodnocení) domácí měny tlumí export",a:false,why:"Depreciace export PODPORUJE (zlevňuje ho)."},
+ {t:"zhodnocení domácí měny zvyšuje HDP přes vyšší čistý export",a:false,why:"Zhodnocení čistý export SNIŽUJE → spíš ↓HDP."}]},
+{topic:"devizy",stem:"O paritě kupních sil (PPP) platí:",items:[
+ {t:"v absolutní verzi PPP je nominální kurz dán poměrem cenových hladin dvou ekonomik",a:true,why:"Absolutní PPP."},
+ {t:"dle zákona jedné ceny se stejný produkt prodává za stejnou cenu bez ohledu na místo prodeje",a:true,why:"Zákon jedné ceny."},
+ {t:"je-li index ERDI větší než 1, je domácí měna podhodnocená (tendence zhodnocovat)",a:true,why:"ERDI &gt; 1 → podhodnocení."},
+ {t:"je-li index ERDI menší než 1, má domácí měna tendenci zhodnocovat",a:false,why:"ERDI &lt; 1 = nadhodnocená → tendence ZNEHODNOcovat."}]},
+{topic:"devizy",stem:"O paritě úrokových měr platí:",items:[
+ {t:"krytá úroková parita využívá forwardový kurz (výnos je smluvně zajištěn)",a:true,why:"Krytá = zajištěná forwardem."},
+ {t:"nekrytá úroková parita je formulována s využitím forwardového kurzu",a:false,why:"Nekrytá používá OČEKÁVANÝ budoucí kurz; forward je u kryté."},
+ {t:"dle nekryté parity přibližně odpovídá očekávaná změna kurzu úrokovému diferenciálu",a:true,why:"Vztah nekryté parity."},
+ {t:"teorie parity úrokových měr je založena na arbitráži a zákonu jedné ceny",a:true,why:"Arbitrážní princip."}]},
+/* ===== Dynamická agregátní poptávka (DAD) ===== */
+{topic:"dad",stem:"O dynamické agregátní poptávce (DAD) platí:",items:[
+ {t:"křivka DAD má negativní (klesající) sklon",a:true,why:"Vyšší inflace → přísnější MP → nižší výdaje."},
+ {t:"tvar DAD se vysvětluje tím, že při růstu inflace centrální banka zvyšuje reálné sazby a klesají výdaje",a:true,why:"Mechanismus přes reakční funkci CB."},
+ {t:"DAD vyjadřuje pozitivní (rostoucí) vztah mezi cenovou hladinou a produktem",a:false,why:"DAD je KLESAJÍCÍ (vztah inflace–produkt)."},
+ {t:"DAD je odvozena z modelu IS-MR",a:true,why:"IS + reakční funkce MR."}]},
+{topic:"dad",stem:"O posunech křivky DAD platí:",items:[
+ {t:"zvýšení vládních výdajů posouvá DAD doprava",a:true,why:"Vyšší poptávka."},
+ {t:"pokles čistého exportu posouvá DAD doleva",a:true,why:"Nižší poptávka po domácí produkci."},
+ {t:"zvýšení autonomních daní posouvá DAD doprava",a:false,why:"Vyšší daně → DAD DOLEVA."},
+ {t:"obavy domácností z budoucnosti (pokles spotřeby) posouvají DAD doleva",a:true,why:"Pokles autonomní spotřeby."}]},
+{topic:"dad",stem:"O odvození DAD a měnové politice platí:",items:[
+ {t:"DAD vzniká kombinací rovnováhy na trhu statků (IS) a měnověpolitického pravidla (MR)",a:true,why:"Model IS-MR."},
+ {t:"DAD je odvozena z rovnováhy IS a LM",a:false,why:"Vychází z IS a reakční funkce MR, ne z LM."},
+ {t:"pohyb po křivce DAD nastává při změně inflace, kdy CB upravuje úrokové sazby",a:true,why:"Pohyb po křivce = změna inflace."},
+ {t:"ve velmi krátkém období je křivka DAD horizontální",a:false,why:"DAD je klesající; horizontální bývá DAS ve velmi krátkém období."}]},
+/* ===== Dynamická agregátní nabídka (DAS) ===== */
+{topic:"das",stem:"O dynamické agregátní nabídce (DAS) platí:",items:[
+ {t:"DAS zachycuje produkci, kterou výrobci nabízejí při různých mírách inflace",a:true,why:"Definice DAS."},
+ {t:"v krátkém období je DAS pozitivně skloněná (rostoucí)",a:true,why:"Krátkodobá DAS roste."},
+ {t:"ve velmi krátkém období je DAS vertikální",a:false,why:"Ve velmi krátkém období je spíše horizontální; vertikální je v DLOUHÉM."},
+ {t:"pokles inflačních očekávání posouvá DAS dolů",a:true,why:"Nižší očekávání → posun DAS dolů."}]},
+{topic:"das",stem:"O DAS v dlouhém období a rigiditách platí:",items:[
+ {t:"v dlouhém období je DAS svislá na úrovni potenciálního produktu",a:true,why:"Y = Y*."},
+ {t:"růst inflačních očekávání posouvá krátkodobou DAS nahoru",a:true,why:"Vyšší očekávání → posun nahoru."},
+ {t:"v dlouhém období jsou mzdy strnulejší a nabídka tak pružnější",a:false,why:"V dlouhém období jsou mzdy PRUŽNĚJŠÍ; rigidita je krátkodobá."},
+ {t:"mezi příčiny krátkodobé rigidity patří mzdové kontrakty a náklady jídelního lístku (menu cost)",a:true,why:"Zdroje cenové/mzdové strnulosti."}]},
+{topic:"das",stem:"O obsahu a odvození DAS platí:",items:[
+ {t:"krátkodobá DAS zachycuje kombinace inflace a produktu při rovnováze trhu práce a trhu statků",a:true,why:"Odvození DAS."},
+ {t:"krátkodobá DAS má klesající průběh",a:false,why:"Krátkodobá DAS je ROSTOUCÍ."},
+ {t:"změna dlouhodobé DAS je spojena se změnou potenciálního produktu",a:true,why:"LDAS se posouvá s Y*."},
+ {t:"DAS zachycuje vztah mezi úrokovou mírou a produktem",a:false,why:"DAS je vztah INFLACE–produkt."}]},
+/* ===== Rovnováha DAD-DAS & šoky ===== */
+{topic:"daddas",stem:"O šocích v modelu DAD-DAS platí:",items:[
+ {t:"negativní nabídkový šok snižuje produkt a zvyšuje inflaci (stagflace)",a:true,why:"Nabídkový šok = opačný směr."},
+ {t:"po poptávkovém šoku se produkt a inflace mění stejným směrem",a:true,why:"Poptávkový šok = stejný směr."},
+ {t:"po nabídkovém šoku se produkt a inflace mění stejným směrem",a:false,why:"Nabídkový šok = OPAČNÝ směr."},
+ {t:"dočasný negativní nabídkový šok vede v konečném důsledku k poklesu inflace",a:true,why:"Po odeznění se ceny vracejí dolů."}]},
+{topic:"daddas",stem:"O trvalých a dočasných šocích platí:",items:[
+ {t:"trvalý pozitivní nabídkový šok vede k růstu potenciálního produktu",a:true,why:"Posun LDAS doprava."},
+ {t:"trvalý negativní nabídkový šok vede k poklesu potenciálního produktu",a:true,why:"Posun LDAS doleva."},
+ {t:"dočasný poptávkový šok trvale mění potenciální produkt",a:false,why:"Potenciál mění jen TRVALÝ nabídkový šok."},
+ {t:"zvýšení kvality vzdělávání je nabídkový šok trvalého charakteru",a:true,why:"Trvale zvyšuje potenciál."}]},
+{topic:"daddas",stem:"Zařaď změnu v modelu DAD-DAS:",items:[
+ {t:"zvýšení cen ropy se projeví posunem krátkodobé DAS nahoru",a:true,why:"Nákladový (nabídkový) šok."},
+ {t:"zvýšení vládních výdajů se projeví posunem DAD doprava",a:true,why:"Poptávkový vliv."},
+ {t:"zvýšení produktivity práce se projeví posunem DAD doleva",a:false,why:"To je nabídkový vliv → posun DAS (dolů), ne DAD."},
+ {t:"zvýšení importu se projeví posunem DAD doleva",a:true,why:"Nižší čistý export → DAD doleva."}]},
+{topic:"daddas",stem:"O rovnováze DAD-DAS a reakční funkci (MR) platí:",items:[
+ {t:"v rovnováze DAD-DAS se skutečná inflace rovná očekávané",a:true,why:"Žádné tlaky na změnu inflace."},
+ {t:"křivka MR je rostoucí: při vyšší kladné produkční mezeře banka zvyšuje sazby",a:true,why:"Reakční funkce CB."},
+ {t:"reakční funkce MR je klesající funkcí",a:false,why:"MR je ROSTOUCÍ (vyšší inflace/mezera → vyšší sazby)."},
+ {t:"pohyb po křivce MR nastává při změně produkční mezery",a:true,why:"Pohyb po MR = změna mezery/inflace."}]},
+/* ===== Nezaměstnanost & Phillipsova křivka ===== */
+{topic:"nezam",stem:"O druzích nezaměstnanosti platí:",items:[
+ {t:"frikční nezaměstnanost souvisí s hledáním práce a změnou zaměstnání",a:true,why:"Krátkodobé hledání."},
+ {t:"strukturální nezaměstnanost vzniká nesouladem kvalifikace a poptávky na trhu práce",a:true,why:"Strukturální nesoulad."},
+ {t:"přirozená míra nezaměstnanosti zahrnuje frikční a strukturální nezaměstnanost",a:true,why:"Dvě složky přirozené míry."},
+ {t:"do přirozené míry nezaměstnanosti patří i cyklická nezaměstnanost",a:false,why:"Cyklická do přirozené míry NEpatří."}]},
+{topic:"nezam",stem:"O nezaměstnanosti a její míře platí:",items:[
+ {t:"nezaměstnaný aktivně hledá práci a je schopen nastoupit",a:true,why:"Definice nezaměstnaného."},
+ {t:"míra nezaměstnanosti = nezaměstnaní / ekonomicky aktivní obyvatelstvo",a:true,why:"Pracovní síla ve jmenovateli."},
+ {t:"jmenovatelem míry nezaměstnanosti je celé obyvatelstvo",a:false,why:"Je to pracovní síla (zaměstnaní + nezaměstnaní)."},
+ {t:"studenti a nepracující důchodci se počítají mezi nezaměstnané",a:false,why:"Patří mezi ekonomicky NEAKTIVNÍ."}]},
+{topic:"nezam",stem:"O Phillipsově křivce platí:",items:[
+ {t:"krátkodobá Phillipsova křivka zachycuje nepřímý vztah inflace a nezaměstnanosti",a:true,why:"Trade-off v krátkém období."},
+ {t:"dlouhodobá Phillipsova křivka je svislá na úrovni přirozené míry nezaměstnanosti",a:true,why:"Svislá na u*."},
+ {t:"dle Phillipsovy křivky roste inflace tím výrazněji, čím vyšší je nezaměstnanost",a:false,why:"Vztah je NEPŘÍMÝ — vyšší nezaměstnanost = nižší inflace."},
+ {t:"v dlouhém období existuje trvalý trade-off mezi inflací a nezaměstnaností",a:false,why:"Neexistuje (dlouhodobá Phillips svislá)."}]},
+{topic:"nezam",stem:"O očekáváních a rozšířené Phillipsově křivce platí:",items:[
+ {t:"podle adaptivních očekávání se očekávaná inflace odvíjí od minulé skutečné inflace",a:true,why:"Adaptivní = z minulosti."},
+ {t:"při racionálních očekáváních může být i krátkodobý vliv expanze na produkt nulový",a:true,why:"Subjekty inflaci předvídají."},
+ {t:"expanzivní měnová politika může trvale snížit nezaměstnanost pod přirozenou úroveň bez růstu inflace",a:false,why:"V dlouhém období ne — skončí jen vyšší inflací."},
+ {t:"přirozená míra nezaměstnanosti odpovídá stabilní (neakcelerující) inflaci — NAIRU",a:true,why:"NAIRU."}]},
+{topic:"nezam",stem:"O přirozené míře nezaměstnanosti platí:",items:[
+ {t:"je ovlivňována ochotou a schopností pracovníků měnit zaměstnání",a:true,why:"Determinanta přirozené míry."},
+ {t:"vyšší štědrost a délka podpor v nezaměstnanosti ji zpravidla zvyšuje",a:true,why:"Delší hledání → vyšší u*."},
+ {t:"při ní je trh práce v rovnováze (cyklická nezaměstnanost je nulová)",a:true,why:"Rovnováha trhu práce."},
+ {t:"je to míra, při níž je cyklická nezaměstnanost maximální",a:false,why:"Naopak — cyklická je NULOVÁ."}]},
+/* ===== Trh práce & Okunův zákon ===== */
+{topic:"prace",stem:"O Okunově zákonu platí:",items:[
+ {t:"spojuje odchylku produktu od potenciálu s odchylkou nezaměstnanosti od přirozené míry",a:true,why:"Vztah HDP–nezaměstnanost."},
+ {t:"růst nezaměstnanosti o 1 p.b. nad přirozenou míru je spojen s poklesem reálného HDP zhruba o 2 %",a:true,why:"Okunův koeficient ≈ 2."},
+ {t:"podle Okunova zákona nemá změna nezaměstnanosti vliv na HDP",a:false,why:"Má — vyšší nezaměstnanost = nižší HDP."},
+ {t:"vyšší tempo růstu HDP nad trend je spojeno s poklesem nezaměstnanosti",a:true,why:"Opačný směr veličin."}]},
+{topic:"prace",stem:"O modelech trhu práce platí:",items:[
+ {t:"poptávka po práci (firmy) klesá s reálnou mzdou, nabídka práce (domácnosti) roste",a:true,why:"LD klesá, LS roste."},
+ {t:"teorie efektivnostních mezd vysvětluje, proč firmy platí mzdu nad rovnovážnou úrovní",a:true,why:"Vyšší mzda → vyšší produktivita/loajalita."},
+ {t:"v modelu peněžní iluze existuje dlouhodobá substituce mezi inflací a nezaměstnaností",a:false,why:"V dlouhém období NE; jen krátkodobě z chybného odhadu cen."},
+ {t:"klasický model trhu práce předpokládá pružné mzdy a stálé vyklízení trhu",a:true,why:"Pružné mzdy → rovnováha."}]},
+{topic:"prace",stem:"O teorii reálných cyklů a pojetích trhu práce platí:",items:[
+ {t:"teorie reálných cyklů předpokládá pružné ceny a mzdy a výkyvy jako reakci na šoky",a:true,why:"RBC: flexibilní ceny."},
+ {t:"keynesiánské pojetí připouští mzdovou rigiditu (lepkavé mzdy)",a:true,why:"Strnulé mzdy."},
+ {t:"pozitivním nabídkovým šokem je například růst cen surovin",a:false,why:"Růst cen surovin je NEGATIVNÍ šok; pozitivní = pokles cen surovin, technologický pokrok."},
+ {t:"v klasickém modelu s pružnými mzdami je nezaměstnanost jen dobrovolná",a:true,why:"Nedobrovolná nezaměstnanost je keynesiánský jev."}]},
+/* ===== Inflace & cenové indexy ===== */
+{topic:"inflace",stem:"O inflaci platí:",items:[
+ {t:"inflace je dlouhodobý růst celkové cenové hladiny",a:true,why:"Ne sezónní/jednorázové změny."},
+ {t:"inflace dosahující dvouciferných hodnot se označuje jako pádivá",a:true,why:"Pádivá = dvouciferná."},
+ {t:"inflace se projevuje vždy ve fázi recese",a:false,why:"Nesouvisí s jednou fází; poptávková inflace bývá v expanzi."},
+ {t:"inflace je příznivá pro věřitele",a:false,why:"Poškozuje VĚŘITELE; pomáhá DLUŽNÍKŮM."}]},
+{topic:"inflace",stem:"O cenových indexech platí:",items:[
+ {t:"deflátor HDP je podílem nominálního a reálného produktu",a:true,why:"Deflátor = nominální/reálný."},
+ {t:"deflátor HDP je rozdílem nominálního a reálného produktu",a:false,why:"Je to PODÍL, ne rozdíl."},
+ {t:"odečtením hodnoty 100 od cenového indexu lze získat míru inflace (v %)",a:true,why:"Index − 100 = míra inflace."},
+ {t:"CPI a deflátor HDP se pro danou ekonomiku a období vždy shodují",a:false,why:"Liší se (jiný koš a váhy)."}]},
+{topic:"inflace",stem:"O indexu spotřebitelských cen (CPI) platí:",items:[
+ {t:"CPI sestavuje Český statistický úřad na základě spotřebního koše",a:true,why:"ČSÚ, spotřební koš."},
+ {t:"každá položka koše má váhu podle podílu výdajů domácností",a:true,why:"Vážený průměr."},
+ {t:"CPI nejčastěji využívá Laspeyresův index (stálá struktura koše)",a:true,why:"Laspeyres."},
+ {t:"CPI závisí na změnách cen úplně všech statků a služeb v ekonomice",a:false,why:"Sleduje jen reprezentativní KOŠ; všechny statky pokrývá deflátor."}]},
+{topic:"inflace",stem:"O typech inflace a indexu cen výrobců platí:",items:[
+ {t:"výrazné zvýšení spotřebních (poptávkových) výdajů způsobuje poptávkovou inflaci",a:true,why:"Tah poptávky."},
+ {t:"negativní nabídkový šok (zdražení vstupů) způsobuje nákladovou inflaci",a:true,why:"Tlak nákladů."},
+ {t:"výrazné zvýšení cen pohonných hmot způsobuje poptávkovou inflaci",a:false,why:"To je NÁKLADOVÁ (nabídková) inflace."},
+ {t:"index cen výrobců (PPI) do určité míry předbíhá vývoj CPI",a:true,why:"PPI předstihuje CPI."}]},
+{topic:"inflace",stem:"O léčení inflace a inflaci v ČR platí:",items:[
+ {t:"metoda „cold turkey“ znamená rychlé a razantní snížení inflace za cenu hlubší recese",a:true,why:"Šoková dezinflace."},
+ {t:"gradualistická metoda snižuje inflaci postupně po malých krocích",a:true,why:"Mírnější, ale delší recese."},
+ {t:"inflaci v ČR v roce 2024 lze označit za pádivou",a:false,why:"2024 byla inflace ~2,4 % (mírná); pádivá byla 2022–2023."},
+ {t:"protiinflační (restriktivní) politika se provádí mj. snižováním nabídky peněz a zvyšováním sazeb",a:true,why:"Restrikce tlumí poptávku."}]},
+/* ===== Fiskální politika & státní dluh ===== */
+{topic:"fiskal",stem:"O fiskální politice a stabilizátorech platí:",items:[
+ {t:"progresivní zdanění je příkladem vestavěných (automatických) stabilizátorů",a:true,why:"Působí samo."},
+ {t:"podpory v nezaměstnanosti působí jako automatický stabilizátor",a:true,why:"Tlumí výkyvy automaticky."},
+ {t:"fiskální politiku provádí centrální banka",a:false,why:"Provádí ji VLÁDA; CB dělá monetární politiku."},
+ {t:"snížení daně z nemovitosti je opatřením restriktivním",a:false,why:"Snížení daní je EXPANZIVNÍ."}]},
+{topic:"fiskal",stem:"O státním dluhu a rozpočtu platí:",items:[
+ {t:"mandatorní výdaje jsou výdaje realizované ze zákona",a:true,why:"Povinné ze zákona."},
+ {t:"schodek státního rozpočtu ČR je financován především státními dluhopisy",a:true,why:"Emise dluhopisů."},
+ {t:"saldo státního rozpočtu ČR bylo vždy schodkové",a:false,why:"Ne vždy — byly i přebytkové/vyrovnané roky."},
+ {t:"expanzivní fiskální politika v dlouhém období zvyšuje pouze reálný produkt",a:false,why:"V dlouhém období zvyšuje hlavně CENOVOU hladinu."}]},
+{topic:"fiskal",stem:"O členění veřejného dluhu a deficitu platí:",items:[
+ {t:"vnitřní dluh je dluh vůči domácím subjektům (věřitelům)",a:true,why:"Domácí věřitelé."},
+ {t:"vnější dluh je dluh vůči zahraničním věřitelům",a:true,why:"Zahraniční věřitelé."},
+ {t:"cyklický deficit je dán fází hospodářského cyklu",a:true,why:"Automatické stabilizátory."},
+ {t:"strukturální deficit vzniká pouze působením hospodářského cyklu",a:false,why:"Strukturální je nezávislý na cyklu (z diskrečních rozhodnutí)."}]},
+{topic:"fiskal",stem:"O účinnosti fiskální politiky platí:",items:[
+ {t:"efekt vytěsňování (crowding-out) snižuje účinnost fiskální expanze",a:true,why:"Vyšší sazby vytěsňují investice."},
+ {t:"mezi bariéry účinnosti patří časová zpoždění a růst veřejného dluhu",a:true,why:"Zpoždění + dluh."},
+ {t:"efekt vytěsňování zvyšuje účinnost fiskální politiky",a:false,why:"Snižuje ji."},
+ {t:"fiskální expanze krátkodobě zvyšuje produkt a snižuje nezaměstnanost",a:true,why:"Krátkodobý reálný účinek."}]},
+/* ===== Solowův model & růst ===== */
+{topic:"rust",stem:"O hospodářském růstu platí:",items:[
+ {t:"ekonomický růst znamená růst potenciálního produktu",a:true,why:"Posun LAS doprava."},
+ {t:"extenzivní růst je tažen zapojením většího množství výrobních faktorů",a:true,why:"Více vstupů."},
+ {t:"intenzivní růst je tažen vyšší produktivitou (technologickým pokrokem)",a:true,why:"Vyšší výstup na vstup."},
+ {t:"ekonomický růst znamená krátkodobé cyklické zvýšení HDP nad potenciál",a:false,why:"To je cyklická expanze; růst = zvýšení POTENCIÁLU."}]},
+{topic:"rust",stem:"Zařaď faktor růstu (extenzivní × intenzivní):",items:[
+ {t:"růst počtu pracovníků je faktorem extenzivního růstu",a:true,why:"Více vstupu práce."},
+ {t:"zavedení efektivnější technologie je faktorem intenzivního růstu",a:true,why:"Vyšší produktivita."},
+ {t:"zvýšení produktivity práce je faktorem extenzivního růstu",a:false,why:"To je INTENZIVNÍ růst."},
+ {t:"k růstu potenciálního produktu vede růst zásoby kapitálu i technologický pokrok",a:true,why:"Oba faktory."}]},
+{topic:"rust",stem:"O Solowově modelu platí:",items:[
+ {t:"Solowův model je dlouhodobý model s exogenním technologickým pokrokem",a:true,why:"Pokrok zvnějšku."},
+ {t:"Solowův model vysvětluje příčiny technologického pokroku",a:false,why:"Bere ho jako EXOGENNÍ — proto endogenní teorie růstu."},
+ {t:"základem je agregátní produkční funkce s klesajícími výnosy z kapitálu",a:true,why:"Klesající mezní produkt kapitálu."},
+ {t:"přírůstek kapitálu je dán rozdílem investic a opotřebení (ΔK = I − δK)",a:true,why:"Akumulace kapitálu."}]},
+{topic:"rust",stem:"O stálém stavu (steady state) v Solowově modelu platí:",items:[
+ {t:"ve stálém stavu investice právě nahrazují opotřebení kapitálu",a:true,why:"I = δK → k se nemění."},
+ {t:"vyšší míra úspor zvyšuje úroveň kapitálu na pracovníka ve stálém stavu",a:true,why:"Vyšší k*."},
+ {t:"vyšší míra opotřebení kapitálu zvyšuje stálý stav kapitálu na pracovníka",a:false,why:"Snižuje ho."},
+ {t:"je-li I &gt; δK, kapitál na pracovníka roste (akumulace)",a:true,why:"Investice převyšují obnovu."}]},
+{topic:"rust",stem:"O technologickém pokroku a růstových teoriích platí:",items:[
+ {t:"v Solowově modelu je dlouhodobý růst produktu na pracovníka tažen technologickým pokrokem",a:true,why:"Bez pokroku růst na pracovníka ustane."},
+ {t:"endogenní teorie růstu (model AK) vysvětluje technologický pokrok uvnitř modelu",a:true,why:"Endogenní pokrok."},
+ {t:"bez technologického pokroku roste produkt na pracovníka v Solowově modelu trvale",a:false,why:"Bez pokroku ekonomika dospěje do stálého stavu a růst na pracovníka USTANE."},
+ {t:"vyšší míra úspor zajišťuje v Solowově modelu trvale vyšší tempo růstu",a:false,why:"Zvyšuje jen ÚROVEŇ stálého stavu, ne trvalé TEMPO (to určuje tech. pokrok)."}]}
+];
+
+/* ---------- pomocné ---------- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function allItems(){return BLOCKS.flatMap(b=>b.items.map(it=>({...it,stem:b.stem,topic:b.topic})));}
+const TOTAL_ITEMS=allItems().length;
+function donutSVG(pct,color){
+  const r=54,c=2*Math.PI*r,off=c*(1-pct/100);
+  return `<svg class="donut" width="142" height="142" viewBox="0 0 142 142">
+    <circle cx="71" cy="71" r="${r}" fill="none" stroke="var(--line)" stroke-width="13"/>
+    <circle cx="71" cy="71" r="${r}" fill="none" stroke="${color}" stroke-width="13" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 71 71)"/>
+    <text x="71" y="80" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="29" fill="var(--navy)">${Math.round(pct)}%</text></svg>`;
+}
+function scoreResult(correct,total,onRetry,onBack,extra){
+  const pct=total?correct/total*100:0, pass=pct>=70;
+  const color=pass?"var(--green)":(pct>=50?"var(--amber)":"var(--red)");
+  const msg=pass?"Pěkné, tohle už máš v ruce. Projdi si chyby a jdi dál."
+                :"Ještě to chce projít — u chyb si přečti, proč je tvrzení pravdivé/nepravdivé, a dej to znovu.";
+  return `<div class="result">${donutSVG(pct,color)}
+    <div class="big ${pass?"pass":"fail"}">${correct}/${total}</div>
+    <div class="rsub">${pass?"správně":"správně — zkus to ještě jednou"}</div>
+    <div class="rmsg">${msg}</div>${extra||""}
+    <div class="qactions" style="justify-content:center;margin-top:22px">
+      <button class="btn orange" onclick="${onRetry}">Zkusit znovu</button>
+      <button class="btn ghost" onclick="${onBack}">Zpět</button></div></div>`;
+}
+
+/* ---------- PLÁN ---------- */
+function renderPlan(){
+  const stats=[[String(TOPICS.length),"okruhů teorie"],["o"+BLOCKS.length,"bloků otázek"],[String(TOTAL_ITEMS),"tvrzení ANO/NE"],["48","u zkoušky"]];
+  const plan=[
+   ["DEN 1","Dopoledne — projít okruhy","Projeď sekci <b>20 okruhů</b>: u každého „co platí“ a hlavně „časté pasti“. Priorita 1 (produkt-výdaje, IS-LM-BP, kurzy, DAD-DAS, nezaměstnanost, fiskální politika).",1],
+   ["DEN 1","Odpoledne — trenažér po blocích","Spusť <b>trenažér ANO/NE</b> po jednotlivých tématech. U každého tvrzení čti vysvětlení — učíš se rozeznat past.",1],
+   ["DEN 1","Večer — rychlovka","Projdi <b>rychlovku</b> (zamíchaná tvrzení ze všech okruhů). Co ti nesedí, dohledej v okruhu.",2],
+   ["DEN 2","Dopoledne — zbylé okruhy","Dober okruhy priority 2–3 (spotřeba, peněžní teorie, platební bilance, devizy, inflace, růst).",2],
+   ["DEN 2","Odpoledne — zkouška nanečisto","Pusť <b>zkoušku nanečisto</b> (48 tvrzení s časem). Projdi si rozbor chyb.",1],
+   ["DEN 2","Večer — přehled pastí","Naposled projeď <b>Přehled &amp; pasti</b> — koncentrát toho, na čem se nejvíc chybuje. Hotovo.",1]];
+  byId("s-plan").innerHTML=`
+   <p class="eyebrow">Makroekonomie II · BALN</p>
+   <div class="hero">
+     <div>
+       <h2 class="h-title">Zkouška je <span style="color:var(--orange-d)">jen teorie</span><br>— ANO/NE.</h2>
+       <p class="lede">48 tvrzení, žádné počítání. Tenhle nástroj tě natrénuje na to hlavní: <b>rozpoznat, kdy je výrok pravdivý a kdy je v něm schválně schovaná past</b>. Jádrem je trenažér ANO/NE ve stylu moodlovských autotestů a zkouška nanečisto.</p>
+       <div class="qactions mt"><button class="btn orange" onclick="show('trenazer')">Spustit trenažér ANO/NE →</button><button class="btn ghost" onclick="show('okruhy')">Projít okruhy</button></div>
+     </div>
+     <div class="heroplane">${heroPlane()}</div>
+   </div>
+   <div class="statbar mt-l">${stats.map(([n,k])=>`<div class="stat"><div class="n${n[0]==='o'?' o':''}">${n[0]==='o'?n.slice(1):n}</div><div class="k">${k}</div></div>`).join("")}</div>
+   <h3 class="section-h">Jak je test postavený</h3>
+   <div class="kp"><div class="kph">Formát ANO/NE</div><div>Otázka má hlavičku (téma nebo tvrzení, např. „V modelu produkt-výdaje platí, že:“) a pod ní několik výroků. U <b>každého výroku zvlášť</b> volíš ANO nebo NE. Žádné A–D, žádné vzorce, žádné dosazování.</div></div>
+   <div class="kp"><div class="kph">Na čem se chybuje</div><div>Nepravdivé výroky stojí skoro vždy na čtyřech věcech: absolutní slova („vždy/nikdy“), <b>prohozený směr</b> vztahu (doprava × doleva, roste × klesá), <b>záměna dvou modelů/pojmů</b> (krátké × dlouhé období, fixní × flexibilní kurz) a přehozené přiřazení (co je co).</div></div>
+   <h3 class="section-h">Studijní plán na 2 dny</h3>
+   <div>${plan.map(([w,h,t,p])=>`<div class="plan-block"><div class="when">${w}</div><div class="body"><h4>${h} <span class="tag p${p}" style="vertical-align:middle">priorita ${p}</span></h4><p style="font-size:14px;color:var(--ink-2);margin:0">${t}</p></div></div>`).join("")}</div>`;
+}
+
+/* ---------- OKRUHY ---------- */
+function priTag(p){return `<span class="tag p${p}">priorita ${p}</span>`;}
+function okruhyGrid(){
+  byId("s-okruhy").innerHTML=`
+   <p class="eyebrow">Teorie</p><h2 class="h-title">20 okruhů</h2>
+   <p class="lede">Všechna témata ke zkoušce. U každého najdeš stručně <b>co platí</b> a hlavně <b>časté pasti</b> — formulace, na kterých Moodle staví nepravdivé výroky. Klikni pro detail.</p>
+   <div class="topicgrid mt-l">${TOPICS.map(t=>`
+     <button class="tcard" onclick="showOkruh('${t.id}')">
+       <div class="trow1"><span class="tnum">${t.num}</span><span>${priTag(t.pri)}</span></div>
+       <h3>${t.title}</h3><div class="tdesc">${t.desc}</div>
+       <div class="tfoot"><span>${t.facts.length} faktů · ${t.traps.length} pastí</span><span>· detail →</span></div>
+     </button>`).join("")}</div>`;
+}
+function showOkruh(id){
+  const t=TOPICS.find(x=>x.id===id);if(!t)return;
+  const facts=`<div class="tflist">${t.facts.map(f=>`<div class="tfitem"><span class="mk y">${ICO_OK}</span><span class="x">${f}</span></div>`).join("")}</div>`;
+  const traps=`<div class="tflist">${t.traps.map(([c,w])=>`<div class="tfitem"><span class="mk n">${ICO_NO}</span><span class="x">„${c}“<span class="w">→ ${w}</span></span></div>`).join("")}</div>`;
+  const dia=t.diagram&&DIAG[t.diagram]?`<h3 class="section-h">Graf</h3>${DIAG[t.diagram]()}`:"";
+  const hasBlocks=BLOCKS.some(b=>b.topic===id);
+  byId("s-okruhy").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="okruhyGrid()">← Zpět na okruhy</button>
+     <span class="tnum" style="font-family:'JetBrains Mono',monospace;color:var(--ink-3)">${t.num}</span>${priTag(t.pri)}</div>
+   <h2 class="h-title">${t.title}</h2><p class="lede">${t.desc}</p>
+   <h3 class="section-h">Co platí</h3>${facts}
+   <h3 class="section-h">Časté pasti</h3>${traps}
+   ${dia}
+   ${hasBlocks?`<div class="qactions mt-l"><button class="btn orange" onclick="trStartBlocks('${id}')">Procvičit toto téma (ANO/NE) →</button></div>`:`<p class="block-note mt-l">Tvrzení k procvičení pro tohle téma doplním z tvých autotestů.</p>`}`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- TRENAŽÉR ANO/NE ---------- */
+let TR={};
+function trenerModes(){
+  const withBlocks=TOPICS.filter(t=>BLOCKS.some(b=>b.topic===t.id));
+  const chips=`<button class="chip" onclick="trStartBlocks('all')">Vše (${BLOCKS.length})</button>`+
+    withBlocks.map(t=>{const n=BLOCKS.filter(b=>b.topic===t.id).length;return `<button class="chip" onclick="trStartBlocks('${t.id}')">${t.title} (${n})</button>`;}).join("");
+  byId("s-trenazer").innerHTML=`
+   <p class="eyebrow">Jádro nástroje</p><h2 class="h-title">Trenažér ANO/NE</h2>
+   <p class="lede">Trénuješ přesně formát zkoušky: u každého výroku rozhodneš ANO/NE a hned vidíš, jak to je a <b>proč</b>. Vyber si téma (po blocích jako u zkoušky), nebo zamíchanou rychlovku.</p>
+   <h3 class="section-h">Po blocích — vyber téma</h3>
+   <div class="chiprow">${chips}</div>
+   <h3 class="section-h">Nebo rychlovka</h3>
+   <div class="tr-intro">
+     <button class="modecard" onclick="trStartRapid()">
+       <div class="mtag"><span class="tag p2">mix</span></div>
+       <h4>Rychlá tvrzení</h4><p>${TOTAL_ITEMS} zamíchaných tvrzení ze všech okruhů, jedno po druhém s okamžitou zpětnou vazbou.</p>
+       <div class="mgo">Spustit →</div></button></div>`;
+}
+
+/* --- režim PO BLOCÍCH --- */
+function trStartBlocks(filter){
+  const list=filter==="all"?[...BLOCKS]:BLOCKS.filter(b=>b.topic===filter);
+  TR={kind:"block",filter,list:shuffle([...list]),bi:0,ans:{},checked:false,correct:0,total:0};
+  show("trenazer");trBlock();
+}
+function trBlock(){
+  const b=TR.list[TR.bi],n=TR.list.length,last=TR.bi===n-1;
+  TR.ans={};TR.checked=false;
+  const rows=b.items.map((it,i)=>`
+    <div class="stmt" id="stmt-${i}">
+      <div class="stmt-t">${it.t}</div>
+      <div class="tfbtns">
+        <button class="tf yes" id="tf-${i}-y" onclick="trPick(${i},true)">ANO</button>
+        <button class="tf no" id="tf-${i}-n" onclick="trPick(${i},false)">NE</button></div>
+      <div class="why" id="why-${i}"></div></div>`).join("");
+  byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button>
+     <span class="tag" style="background:var(--navy);color:#fff;border-color:var(--navy)">${titleOf(b.topic)}</span></div>
+   <div class="qprog"><div class="bar"><div class="fill" style="width:${TR.bi/n*100}%"></div></div><div class="ct">blok ${TR.bi+1} / ${n}</div></div>
+   <div class="stem"><span class="q">${b.stem}</span></div>
+   <div class="block-note">U každého výroku zvol ANO/NE, pak zkontroluj celý blok.</div>
+   ${rows}
+   <div class="qactions">
+     <button class="btn orange" id="tr-check" onclick="trCheckBlock()">Zkontrolovat blok</button>
+     <button class="btn" id="tr-next" onclick="trNextBlock()" style="display:none">${last?"Zobrazit výsledek →":"Další blok →"}</button>
+     <span class="spacer"></span></div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function trPick(i,val){
+  if(TR.checked)return;TR.ans[i]=val;
+  byId("tf-"+i+"-y").classList.toggle("sel",val===true);
+  byId("tf-"+i+"-n").classList.toggle("sel",val===false);
+}
+function trCheckBlock(){
+  if(TR.checked)return;
+  const b=TR.list[TR.bi];
+  b.items.forEach((it,i)=>{
+    const y=byId("tf-"+i+"-y"),no=byId("tf-"+i+"-n");
+    y.disabled=no.disabled=true;y.classList.remove("sel");no.classList.remove("sel");
+    const user=TR.ans[i];
+    (it.a?y:no).classList.add("correct");
+    if(user!==undefined&&user!==it.a)(user?y:no).classList.add("wrong");
+    if(user===undefined){y.classList.add("muted");no.classList.add("muted");(it.a?y:no).classList.remove("muted");}
+    const ok=user===it.a;if(ok)TR.correct++;TR.total++;
+    byId("stmt-"+i).classList.add(ok?"ok":"bad");
+    const why=byId("why-"+i);why.className="why show";
+    why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
+  });
+  TR.checked=true;
+  byId("tr-check").style.display="none";byId("tr-next").style.display="";
+}
+function trNextBlock(){
+  if(TR.bi<TR.list.length-1){TR.bi++;trBlock();}
+  else byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button><b style="font-size:14px">Trenažér po blocích</b></div>
+   ${scoreResult(TR.correct,TR.total,`trStartBlocks('${TR.filter}')`,"trenerModes()")}`;
+}
+
+/* --- režim RYCHLOVKA --- */
+function trStartRapid(){
+  TR={kind:"rapid",list:shuffle(allItems()),ri:0,correct:0,checked:false};
+  show("trenazer");trRapid();
+}
+function trRapid(){
+  const it=TR.list[TR.ri],n=TR.list.length,last=TR.ri===n-1;
+  TR.checked=false;
+  byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button>
+     <span class="tag" style="background:var(--navy);color:#fff;border-color:var(--navy)">${titleOf(it.topic)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3)">rychlovka</span></div>
+   <div class="qprog"><div class="bar"><div class="fill" style="width:${TR.ri/n*100}%"></div></div><div class="ct">${TR.ri+1} / ${n}</div></div>
+   <div class="block-note">${it.stem}</div>
+   <div class="stmt" id="stmt-0">
+     <div class="stmt-t">${it.t}</div>
+     <div class="tfbtns">
+       <button class="tf yes" id="tf-0-y" onclick="trPickRapid(true)">ANO</button>
+       <button class="tf no" id="tf-0-n" onclick="trPickRapid(false)">NE</button></div>
+     <div class="why" id="why-0"></div></div>
+   <div class="qactions"><button class="btn" id="tr-next" onclick="trNextRapid()" style="display:none">${last?"Zobrazit výsledek →":"Další →"}</button><span class="spacer"></span></div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function trPickRapid(val){
+  if(TR.checked)return;TR.checked=true;
+  const it=TR.list[TR.ri];
+  const y=byId("tf-0-y"),no=byId("tf-0-n");y.disabled=no.disabled=true;
+  (it.a?y:no).classList.add("correct");
+  if(val!==it.a)(val?y:no).classList.add("wrong");
+  const ok=val===it.a;if(ok)TR.correct++;
+  byId("stmt-0").classList.add(ok?"ok":"bad");
+  const why=byId("why-0");why.className="why show";
+  why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
+  byId("tr-next").style.display="";
+}
+function trNextRapid(){
+  if(TR.ri<TR.list.length-1){TR.ri++;trRapid();}
+  else byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button><b style="font-size:14px">Rychlovka</b></div>
+   ${scoreResult(TR.correct,TR.list.length,"trStartRapid()","trenerModes()")}`;
+}
+
+/* ---------- ZKOUŠKA NANEČISTO ---------- */
+let EX={};
+function zkouskaIntro(){
+  byId("s-zkouska").innerHTML=`
+   <p class="eyebrow">Před testem</p><h2 class="h-title">Zkouška nanečisto</h2>
+   <p class="lede">Nasimuluje ostrý test: série tvrzení ANO/NE <b>bez okamžité zpětné vazby</b>, s běžící časomírou. Na konci dostaneš skóre a <b>rozbor všech tvrzení</b> — co bylo jak a proč.</p>
+   <div class="grid mt-l">
+     <button class="modecard" onclick="exStart(48)">
+       <div class="mtag"><span class="tag p1">ostrá</span></div>
+       <h4>Plná zkouška — 48 tvrzení</h4><p>Přesně jako u zkoušky. Zamíchaná tvrzení ze všech okruhů, čas běží.</p>
+       <div class="mgo">Spustit →</div></button>
+     <button class="modecard" onclick="exStart(20)">
+       <div class="mtag"><span class="tag p2">krátká</span></div>
+       <h4>Rychlý test — 20 tvrzení</h4><p>Kratší kolo na zahřátí nebo když máš málo času.</p>
+       <div class="mgo">Spustit →</div></button>
+   </div>
+   <div class="kp mt-l"><div class="kph">Tip</div><div>Nejdřív si projeď okruhy a trenažér po blocích. Zkoušku nanečisto si nech až ke konci jako kontrolu — ukáže ti, kde ještě tápeš.</div></div>`;
+}
+function fmtTime(ms){const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function exStart(n){
+  const items=shuffle(allItems()).slice(0,n);
+  if(EX.timer)clearInterval(EX.timer);
+  EX={n,list:items,i:0,answers:Array(items.length).fill(null),startMs:Date.now(),timer:setInterval(exTick,1000)};
+  show("zkouska");exRender();
+}
+function exTick(){const el=byId("ex-clock");if(el)el.textContent=fmtTime(Date.now()-EX.startMs);}
+function exRender(){
+  const it=EX.list[EX.i],n=EX.list.length;
+  byId("s-zkouska").innerHTML=`
+   <div class="examhud">
+     <span class="clock" id="ex-clock">${fmtTime(Date.now()-EX.startMs)}</span>
+     <span class="scoremini">Tvrzení ${EX.i+1} / ${n}</span>
+     <span class="spacer"></span>
+     <button class="btn ghost sm" onclick="exQuit()">Ukončit</button></div>
+   <div class="qprog"><div class="bar"><div class="fill" style="width:${EX.i/n*100}%"></div></div><div class="ct">${Math.round(EX.i/n*100)}&nbsp;%</div></div>
+   <div class="block-note">${it.stem}</div>
+   <div class="stmt" id="stmt-0"><div class="stmt-t">${it.t}</div>
+     <div class="tfbtns">
+       <button class="tf yes" onclick="exAns(true)">ANO</button>
+       <button class="tf no" onclick="exAns(false)">NE</button></div></div>
+   <p class="block-note" style="margin-top:14px">Vyber ANO/NE — automaticky přejdeš na další. Vyhodnocení až na konci.</p>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function exAns(val){
+  EX.answers[EX.i]=val;
+  if(EX.i<EX.list.length-1){EX.i++;exRender();}else exFinish();
+}
+function exQuit(){if(EX.timer)clearInterval(EX.timer);zkouskaIntro();}
+function exFinish(){
+  if(EX.timer)clearInterval(EX.timer);
+  const t=fmtTime(Date.now()-EX.startMs);
+  let correct=0;
+  EX.list.forEach((it,k)=>{if(EX.answers[k]===it.a)correct++;});
+  const review=EX.list.map((it,k)=>{
+    const u=EX.answers[k],ok=u===it.a,utxt=u===null?"—":(u?"ANO":"NE");
+    return `<div class="stmt ${ok?"ok":"bad"}"><div class="stmt-t">${it.t}</div>
+      <div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span><b>Tvoje: ${utxt}</b> — ${it.why}</div></div>`;
+  }).join("");
+  const extra=`<div style="text-align:left;margin-top:26px">
+     <div class="block-note" style="text-align:center;margin-bottom:14px">Čas: <b>${t}</b></div>
+     <h3 class="section-h" style="margin-top:6px">Rozbor — co bylo jak</h3>${review}</div>`;
+  byId("s-zkouska").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="zkouskaIntro()">← Zpět</button><b style="font-size:14px">Výsledek zkoušky</b></div>
+   ${scoreResult(correct,EX.list.length,`exStart(${EX.n})`,"zkouskaIntro()",extra)}`;
+}
+
+/* ---------- PŘEHLED & PASTI ---------- */
+function prehledRender(){
+  const pats=[
+   ["Absolutní slova","„vždy, nikdy, pouze, jediný, výhradně“ — v makru skoro vždy znamenají NE. Realita má výjimky."],
+   ["Prohozený směr","doprava × doleva, roste × klesá, zvyšuje × snižuje, apreciace × depreciace. Ověř, kterým směrem vztah opravdu jde."],
+   ["Záměna dvojic","krátké × dlouhé období, fixní × flexibilní kurz, IS × LM, přímé × portfoliové investice, nominální × reálné."],
+   ["Přehozené přiřazení","kdo říká co: Fisher × Cambridge, Baumol-Tobin × Tobin, automatické stabilizátory × diskreční politika."]];
+  const cards=TOPICS.filter(t=>t.traps.length).map(t=>`
+    <div class="card"><h3 style="font-family:'Space Grotesk';font-size:16px;color:var(--navy);margin:0 0 10px">
+      <span style="font-family:'JetBrains Mono',monospace;color:var(--ink-3);font-size:13px">${t.num}</span>&nbsp; ${t.title}</h3>
+      <div class="tflist">${t.traps.map(([c,w])=>`<div class="tfitem"><span class="mk n">${ICO_NO}</span><span class="x">„${c}“<span class="w">→ ${w}</span></span></div>`).join("")}</div></div>`).join("");
+  byId("s-prehled").innerHTML=`
+   <p class="eyebrow">Před testem</p><h2 class="h-title">Přehled &amp; pasti</h2>
+   <p class="lede">Koncentrát nepravdivých formulací, na kterých test staví. Projeď těsně před zkouškou — když výrok poznáš jako některou z těchto pastí, máš ANO/NE skoro jistě.</p>
+   <h3 class="section-h">Čtyři vzorce pastí</h3>
+   <div>${pats.map(([h,d])=>`<div class="kp"><div class="kph">${h}</div><div>${d}</div></div>`).join("")}</div>
+   <h3 class="section-h">Pasti podle okruhů</h3>
+   <div class="grid">${cards}</div>`;
+}
+
+/* ---------- INIT ---------- */
+buildNav();renderPlan();okruhyGrid();trenerModes();zkouskaIntro();prehledRender();show("plan");
+</script>
+</body>
+</html>
