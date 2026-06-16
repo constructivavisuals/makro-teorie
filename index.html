@@ -267,23 +267,32 @@ a{color:var(--orange-d)}
 
 /* ---------- mobile ---------- */
 @media (max-width:860px){
+  html,body{overflow-x:hidden;max-width:100%}
   .app{flex-direction:column}
-  .rail{position:static;height:auto;width:auto;flex:none;flex-direction:row;align-items:center;gap:10px;padding:11px 14px;overflow:hidden;background-position:0 0}
-  .brand{padding:0;flex:0 0 auto}
-  .brand h1{font-size:14.5px}
+  /* horní lišta na plnou šířku: brand + nástroje v řádku, navigace pod tím */
+  .rail{position:static;height:auto;width:100%;max-width:100%;flex:none;flex-direction:column;align-items:stretch;gap:10px;padding:10px 14px;overflow:hidden;background-position:0 0}
+  .brand{padding:0;width:100%;align-items:center;gap:11px}
+  .brand h1{font-size:15px}
   .brand .sub{display:none}
   .logo{width:34px;height:34px;flex:0 0 34px}
-  .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px;margin-top:0;-webkit-overflow-scrolling:touch}
+  .railtools{margin-left:auto}
+  /* navigace = zalamovací pásek: všech 5 sekcí vidět, žádné posouvání do strany */
+  .nav{flex-direction:row;flex-wrap:wrap;gap:6px;width:100%;min-width:0;margin-top:0;overflow:visible}
   .nlabel{display:none}
-  .nav button{flex:0 0 auto;padding:8px 13px}
+  .nav button{flex:0 0 auto;width:auto;padding:8px 12px;font-size:13px;gap:8px}
+  .nav button svg{width:16px;height:16px}
   .nav button .lbl{white-space:nowrap}
   .nav button .pin{display:none}
   .nav button.on::before{display:none}
   .foot{display:none}
-  .wrap{padding:30px 20px 84px}
-  .hero{grid-template-columns:1fr;gap:26px}
+  .wrap{padding:24px 16px 80px}
+  .hero{grid-template-columns:1fr;gap:24px}
   .heroplane{order:-1}
   .statbar{grid-template-columns:repeat(2,1fr)}
+  .heat{grid-template-rows:repeat(7,11px);grid-auto-columns:11px}
+  .toastwrap{left:12px;right:12px;bottom:12px;max-width:none}
+  .modal-bd{padding:16px}
+  .backbar,.examhud{gap:8px}
 }
 
 /* ---------- pokrok & hvězda (přidané UI) ---------- */
