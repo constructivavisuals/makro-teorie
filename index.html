@@ -5,10 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Makroekonomie II — teorie ANO/NE (BALN)</title>
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#0E1619">
+<meta name="theme-color" content="#0E1619" id="meta-theme-color">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+/* nastav téma co nejdřív (bez probliknutí); volba z localStorage, jinak systémové */
+(function(){try{var t=localStorage.getItem("makro2_theme");if(t!=="dark"&&t!=="light")t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";document.documentElement.setAttribute("data-theme",t);var m=document.getElementById("meta-theme-color")||document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#0E1619":"#E8EEEF");}catch(e){}})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -304,6 +308,92 @@ a{color:var(--orange-d)}
 .linkbtn{background:none;border:0;color:var(--ink-3);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.03em;text-decoration:underline;text-underline-offset:2px;padding:2px;cursor:pointer}
 .linkbtn:hover{color:var(--red-d)}
 @media (max-width:860px){.prog2{grid-template-columns:1fr;gap:18px}}
+
+/* ============================================================
+   TMAVÝ REŽIM — přemapování STÁVAJÍCÍCH proměnných (Constructiva dark).
+   Přebarví i inline styly v JS a SVG grafy (DIAG), které čerpají var().
+============================================================ */
+:root[data-theme="dark"]{
+  --powder:#BAD3D7; --powder-d:#A6C6CC; --powder-soft:#22363C;
+  --slate:#9FBCC3; --steel:#7E9AA1;
+  --navy:#16242A; --navy-2:#101D22; --navy-3:#274149; --navy-ink:#CDDBDE; --navy-ink-2:#8AA2A9;
+  --bg:#0E1619; --grid:#152228; --surface:#16252B; --surface-2:#1D3037;
+  --ink:#DCE8EA; --ink-2:#A0B7BD; --ink-3:#7C969D;
+  --line:#24373D; --line-2:#334C53;
+  --orange:#5E97A3; --orange-d:#BAD3D7; --orange-soft:#1B2E34; --orange-line:rgba(186,211,215,.26);
+  --green:#52B392; --green-d:#88D8BD; --green-soft:#15302A; --green-line:rgba(82,179,146,.34);
+  --red:#D67E7E; --red-d:#F1AAAA; --red-soft:#37211F; --red-line:rgba(214,126,126,.34);
+  --amber:#D3A455; --amber-soft:#322819; --amber-line:rgba(211,164,85,.36);
+  --violet:#56B8C8; --violet-soft:#16323A;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 28px -20px rgba(0,0,0,.7);
+  --shadow-lg:0 2px 8px rgba(0,0,0,.5),0 30px 60px -28px rgba(0,0,0,.82);
+}
+/* graf: var(--navy) je ve světlém tmavá čára; na tmavém ji uvnitř grafu zesvětli */
+:root[data-theme="dark"] .diagram{--navy:#A7CCD4}
+/* primární CTA na tmavém čte líp v ocelové než v tmavě navy */
+:root[data-theme="dark"] .btn.orange{background:var(--orange);border-color:var(--orange);color:#0E1619}
+:root[data-theme="dark"] .btn.orange:hover{background:var(--orange-d);border-color:var(--orange-d);color:#0E1619}
+
+/* ---------- mikrointerakce ---------- */
+.tf:active:not([disabled]){transform:scale(.96)}
+.btn:active{transform:translateY(0) scale(.985)}
+.iconbtn:active{transform:scale(.93)}
+@keyframes pop{0%{transform:scale(.975)}60%{transform:scale(1.012)}100%{transform:scale(1)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){
+  .stmt.ok,.stmt.bad{animation:pop .16s ease}
+  .why.show{animation:fadeUp .2s ease}
+  .ringfill{transition:stroke-dashoffset .65s cubic-bezier(.2,.7,.2,1)}
+}
+
+/* ---------- rail nástroje (téma + nápověda) ---------- */
+.railtools{margin-left:auto;display:flex;gap:6px;align-self:flex-start}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;border:1px solid rgba(186,211,215,.18);background:rgba(186,211,215,.06);color:var(--navy-ink);transition:background .15s,color .15s,transform .12s}
+.iconbtn:hover{background:rgba(186,211,215,.15);color:#fff}
+.iconbtn svg{width:17px;height:17px}
+
+/* ---------- dnešní dávka (hero na Plánu) ---------- */
+.dhero{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:22px 26px}
+.dhero .dk{font-family:"JetBrains Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--orange-d);font-weight:600;margin-bottom:7px;display:inline-flex;align-items:center;gap:8px}
+.dhero .dk::before{content:"";width:12px;height:12px;background:var(--xhair) center/contain no-repeat}
+.dhero h3{font-family:"Space Grotesk";font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px}
+.dhero p{font-size:14px;color:var(--ink-2);margin:0 0 14px;line-height:1.55;max-width:54ch}
+.dmeta{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.dmeta .dm{font-size:13px;color:var(--ink-2)}
+.dmeta .dm b{font-family:"Space Grotesk";color:var(--ink);font-size:15px;font-weight:700}
+
+/* ---------- mastery ---------- */
+.mastgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.mastrow{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:11px 14px;box-shadow:var(--shadow)}
+.mastrow .mtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+.mastrow .mname{font-size:13px;color:var(--ink);font-weight:500;line-height:1.2}
+.mastrow .mfr{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-3);white-space:nowrap}
+.mbar{height:7px;background:var(--line);border-radius:999px;overflow:hidden}
+.mbar>span{display:block;height:100%;background:linear-gradient(90deg,var(--orange),var(--powder));border-radius:999px;transition:width .55s cubic-bezier(.2,.7,.2,1)}
+
+/* ---------- SRS box badge ---------- */
+.boxbadge{display:inline-flex;align-items:center;font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--orange-d);background:var(--orange-soft);border:1px solid var(--orange-line);border-radius:999px;padding:3px 10px}
+
+/* ---------- nápověda kláves + modal ---------- */
+.keyhint{display:none;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-3);letter-spacing:.02em;margin-top:16px}
+.keyhint kbd,.kbrow kbd{font-family:"JetBrains Mono",monospace;background:var(--surface-2);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--ink-2);font-size:11px;margin:0 1px}
+@media (hover:hover) and (pointer:fine){.keyhint{display:block}}
+.modal-bd{position:fixed;inset:0;background:rgba(6,12,14,.58);display:none;align-items:center;justify-content:center;padding:24px;z-index:60}
+.modal-bd.on{display:flex}
+.modal{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);box-shadow:var(--shadow-lg);max-width:470px;width:100%;padding:26px 26px 20px}
+.modal h3{font-family:"Space Grotesk";font-size:19px;color:var(--ink);margin-bottom:10px}
+.modal p{font-size:14px;color:var(--ink-2);line-height:1.6;margin:0 0 14px}
+.kbrow{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.kbrow span{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-2);display:inline-flex;align-items:center;gap:5px}
+
+/* ---------- souhrn sezení ---------- */
+.brkwrap{text-align:left}
+
+@media (max-width:860px){
+  .dhero{grid-template-columns:1fr;gap:16px;text-align:center}
+  .dhero .ring{margin:0 auto}
+  .dmeta{justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -316,6 +406,10 @@ a{color:var(--orange-d)}
       <div>
         <h1>Makro&nbsp;II — teorie</h1>
         <div class="sub">BALN · zkouška ANO/NE</div>
+      </div>
+      <div class="railtools">
+        <button class="iconbtn" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Přepnout světlý / tmavý režim" title="Světlý / tmavý režim"></button>
+        <button class="iconbtn" type="button" onclick="toggleHelp(true)" aria-label="Nápověda — jak appka funguje" title="Jak appka funguje"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.3.9c0 1.9-2.8 2.5-2.8 2.5M12 17h.01"/></svg></button>
       </div>
     </div>
     <nav class="nav" id="nav"></nav>
@@ -333,6 +427,14 @@ a{color:var(--orange-d)}
       <section class="screen" id="s-prehled"></section>
     </div>
   </main>
+</div>
+<div class="modal-bd" id="helpModal" onclick="if(event.target===this)toggleHelp(false)">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Nápověda">
+    <h3>Jak appka funguje</h3>
+    <p>U každého výroku rozhodneš <b>ANO/NE</b> a hned vidíš, proč to tak je. Hlavní je režim <b>Učení</b> — chytré opakování (Leitnerův systém) ti samo vybere, co máš dnes zopakovat, ať se látka udrží v hlavě.</p>
+    <div class="kbrow"><span><kbd>A</kbd> ANO</span><span><kbd>N</kbd> NE</span><span><kbd>S</kbd> ★ hvězda</span><span><kbd>Enter</kbd> / <kbd>mezerník</kbd> další</span></div>
+    <div class="qactions" style="justify-content:flex-end"><button class="btn ghost sm" onclick="toggleHelp(false)">Zavřít</button></div>
+  </div>
 </div>
 <script>
 /* ============================================================
@@ -354,8 +456,8 @@ function sidOf(topic,t){return hashStr(topic+"::"+t);}
 function loadStore(){
   try{
     const o=JSON.parse(localStorage.getItem(LS_KEY)||"null")||{};
-    return {v:1,exams:Array.isArray(o.exams)?o.exams:[],topics:o.topics||{},wrong:o.wrong||{},starred:o.starred||{}};
-  }catch(e){return {v:1,exams:[],topics:{},wrong:{},starred:{}};}
+    return {v:2,exams:Array.isArray(o.exams)?o.exams:[],topics:o.topics||{},wrong:o.wrong||{},starred:o.starred||{},srs:o.srs||{},daily:o.daily||null};
+  }catch(e){return {v:2,exams:[],topics:{},wrong:{},starred:{},srs:{},daily:null};}
 }
 let STORE=loadStore();
 function saveStore(){try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}}
@@ -371,14 +473,98 @@ function toggleStar(sid,el){
   if(el)el.classList.toggle("on",!!STORE.starred[sid]);
 }
 function resetProgress(){
-  if(!confirm("Opravdu vymazat veškerý uložený pokrok (statistiky, historii zkoušek, chybné i označené výroky)? Akci nelze vrátit."))return;
-  STORE={v:1,exams:[],topics:{},wrong:{},starred:{}};
-  saveStore();renderPlan();
+  if(!confirm("Opravdu vymazat veškerý uložený pokrok (chytré opakování / SRS, statistiky, historii zkoušek, chybné i označené výroky)? Akci nelze vrátit."))return;
+  STORE={v:2,exams:[],topics:{},wrong:{},starred:{},srs:{},daily:null};
+  ensureDaily();saveStore();renderPlan();
 }
 const STAR_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.2l2.6 5.55 6.05.7-4.45 4.13 1.18 5.97L12 17.7 6.62 19.55 7.8 13.58 3.35 9.45l6.05-.7z"/></svg>';
 function starBtn(sid){return `<button class="starbtn${isStarred(sid)?" on":""}" type="button" onclick="toggleStar('${sid}',this)" aria-label="Označit výrok jako záludný" title="Označit jako záludný">${STAR_SVG}</button>`;}
 function pctClass(p){return p>=70?"g":(p>=50?"a":"r");}
 function fmtDate(ms){try{const d=new Date(ms);return d.toLocaleDateString("cs-CZ",{day:"numeric",month:"numeric"})+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}catch(e){return "";}}
+function cardWord(n){const a=Math.abs(n)%100,b=a%10;if(a>=11&&a<=14)return "karet";if(b===1)return "karta";if(b>=2&&b<=4)return "karty";return "karet";}
+function dayWord(n){const a=Math.abs(n)%100,b=a%10;if(a>=11&&a<=14)return "dní";if(b===1)return "den";if(b>=2&&b<=4)return "dny";return "dní";}
+
+/* ============================================================
+   CHYTRÉ OPAKOVÁNÍ (Leitner) + denní dávka + streak + mastery
+============================================================ */
+const DAY_MS=86400000;
+const SRS_DAYS={1:0,2:1,3:3,4:7,5:16};   /* box → interval ve dnech */
+function dayKey(ms){const x=new Date(ms==null?Date.now():ms);return x.getFullYear()+"-"+(x.getMonth()+1)+"-"+x.getDate();}
+function ensureDaily(){
+  if(!STORE.daily)STORE.daily={date:"",done:0,newToday:0,streak:0,last:"",goal:20,newCap:15};
+  if(STORE.daily.goal==null)STORE.daily.goal=20;
+  if(STORE.daily.newCap==null)STORE.daily.newCap=15;
+  const t=dayKey();
+  if(STORE.daily.date!==t){STORE.daily.date=t;STORE.daily.done=0;STORE.daily.newToday=0;}
+}
+function touchStreak(){
+  const t=dayKey();
+  if(STORE.daily.last===t)return;
+  const y=dayKey(Date.now()-DAY_MS);
+  STORE.daily.streak=(STORE.daily.last===y)?(STORE.daily.streak||0)+1:1;
+  STORE.daily.last=t;
+}
+function srsReview(sid,ok){
+  ensureDaily();
+  const now=Date.now();
+  const isNew=!STORE.srs[sid];
+  const s=STORE.srs[sid]||{box:1,due:now,seen:0,correct:0,lapses:0};
+  s.seen++;
+  if(ok){s.correct++;s.box=Math.min(5,s.box+1);}else{s.lapses++;s.box=1;}
+  s.due=now+SRS_DAYS[s.box]*DAY_MS;
+  STORE.srs[sid]=s;
+  if(isNew)STORE.daily.newToday=(STORE.daily.newToday||0)+1;
+  STORE.daily.done=(STORE.daily.done||0)+1;
+  touchStreak();
+}
+function topicMastery(topicId){
+  const sids=BLOCKS.filter(b=>b.topic===topicId).flatMap(b=>b.items.map(it=>sidOf(topicId,it.t)));
+  if(!sids.length)return null;
+  const m=sids.filter(sid=>{const s=STORE.srs[sid];return s&&s.box>=4;}).length;
+  return {m,total:sids.length,pct:Math.round(m/sids.length*100)};
+}
+function overallMastery(){
+  const items=allItems();const m=items.filter(it=>{const s=STORE.srs[it.sid];return s&&s.box>=4;}).length;
+  return {m,total:items.length,pct:items.length?Math.round(m/items.length*100):0};
+}
+function dailyQueue(){
+  ensureDaily();
+  const now=Date.now(),items=allItems();
+  const due=shuffle(items.filter(it=>{const s=STORE.srs[it.sid];return s&&s.due<=now;}));
+  const fresh=shuffle(items.filter(it=>!STORE.srs[it.sid]));
+  const newLeft=Math.max(0,STORE.daily.newCap-(STORE.daily.newToday||0));
+  let pool=shuffle([...due,...fresh.slice(0,newLeft)]);   /* interleaving napříč okruhy */
+  const goalLeft=Math.max(0,STORE.daily.goal-(STORE.daily.done||0));
+  if(goalLeft>0)pool=pool.slice(0,goalLeft);
+  return pool;
+}
+
+/* ============================================================
+   TÉMA (světlé / tmavé) + NÁPOVĚDA
+============================================================ */
+const THEME_KEY="makro2_theme";
+const MOON_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>';
+const SUN_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4l1.4-1.4M18 6l1.4-1.4"/></svg>';
+function curTheme(){return document.documentElement.getAttribute("data-theme")||"light";}
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  try{localStorage.setItem(THEME_KEY,t);}catch(e){}
+  const m=document.getElementById("meta-theme-color");if(m)m.setAttribute("content",t==="dark"?"#0E1619":"#E8EEEF");
+  const tb=byId("themeToggle");if(tb)tb.innerHTML=(t==="dark"?SUN_SVG:MOON_SVG);
+}
+function toggleTheme(){applyTheme(curTheme()==="dark"?"light":"dark");}
+function toggleHelp(force){const bd=byId("helpModal");if(!bd)return;const on=force!=null?force:!bd.classList.contains("on");bd.classList.toggle("on",on);}
+
+/* obecný prstenec (mastery / skóre) */
+function ringSVG(pct,size,stroke,big,small){
+  const sw=Math.round(size*0.12),r=(size-sw)/2,c=2*Math.PI*r,off=c*(1-pct/100),cx=size/2;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${sw}"/>
+    <circle class="ringfill" cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 ${cx} ${cx})"/>
+    <text x="${cx}" y="${cx-1}" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="${(size*0.27).toFixed(0)}" fill="var(--ink)">${big}</text>
+    ${small?`<text x="${cx}" y="${(cx+size*0.19).toFixed(0)}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="${(size*0.11).toFixed(0)}" fill="var(--ink-3)">${small}</text>`:""}
+  </svg>`;
+}
 
 const COICON={
  pozor:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -1157,7 +1343,7 @@ function donutSVG(pct,color){
     <circle cx="71" cy="71" r="${r}" fill="none" stroke="var(--line)" stroke-width="13"/>
     <circle cx="71" cy="71" r="${r}" fill="none" stroke="${color}" stroke-width="13" stroke-linecap="round"
       stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 71 71)"/>
-    <text x="71" y="80" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="29" fill="var(--navy)">${Math.round(pct)}%</text></svg>`;
+    <text x="71" y="80" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="29" fill="var(--ink)">${Math.round(pct)}%</text></svg>`;
 }
 function scoreResult(correct,total,onRetry,onBack,extra){
   const pct=total?correct/total*100:0, pass=pct>=70;
@@ -1171,6 +1357,46 @@ function scoreResult(correct,total,onRetry,onBack,extra){
     <div class="qactions" style="justify-content:center;margin-top:22px">
       <button class="btn orange" onclick="${onRetry}">Zkusit znovu</button>
       <button class="btn ghost" onclick="${onBack}">Zpět</button></div></div>`;
+}
+
+/* ---------- DNEŠNÍ DÁVKA (hlavní akce na Plánu) ---------- */
+function dailyHero(){
+  ensureDaily();
+  const q=dailyQueue(),n=q.length,om=overallMastery();
+  const goal=STORE.daily.goal,done=STORE.daily.done||0,streak=STORE.daily.streak||0;
+  const ring=ringSVG(om.pct,98,"var(--orange)",om.pct+"%","umíš");
+  const cta=n>0
+    ?`<button class="btn orange" style="font-size:15px;padding:14px 24px" onclick="trStartLearn()">Začni dnešní dávkou — ${n} ${cardWord(n)} →</button>`
+    :`<button class="btn orange" onclick="show('trenazer')">Procvičit klasicky →</button>`;
+  const head=n>0?("Dnes k zopakování: "+n+" "+cardWord(n)):"Pro dnešek hotovo 🎉";
+  const sub=n>0
+    ?"Chytré opakování (Leitner) vybírá, co máš zopakovat dnes — prošlé termíny i pár nových výroků, promíchané napříč okruhy."
+    :"Žádné výroky nejsou po termínu. Pochval se a vrať se zítra na další dávku — nebo si dej rychlovku či zkoušku nanečisto.";
+  return `<div class="dhero mt-l">
+    <div class="ring">${ring}</div>
+    <div class="dbody">
+      <div class="dk">Chytré opakování · dnešní dávka</div>
+      <h3>${head}</h3>
+      <p>${sub}</p>
+      <div class="dmeta">
+        <span class="dm">Dnes <b>${done}/${goal}</b></span>
+        <span class="dm">🔥 Série <b>${streak}</b> ${dayWord(streak)}</span>
+        <span class="dm">Zvládnuto <b>${om.m}/${om.total}</b></span>
+      </div>
+      <div class="qactions">${cta}<button class="btn ghost sm" onclick="changeGoal()">Denní cíl: ${goal}</button></div>
+    </div></div>`;
+}
+function changeGoal(){
+  const v=prompt("Denní cíl — kolik karet chceš zvládnout za den:",STORE.daily.goal);
+  if(v==null)return;const n=parseInt(v,10);
+  if(isFinite(n)&&n>=5&&n<=200){STORE.daily.goal=n;saveStore();renderPlan();}
+  else alert("Zadej číslo mezi 5 a 200.");
+}
+function masterySection(){
+  if(!Object.keys(STORE.srs).length)return "";
+  const cells=TOPICS.map(t=>{const mm=topicMastery(t.id);if(!mm)return "";
+    return `<div class="mastrow"><div class="mtop"><span class="mname">${t.title}</span><span class="mfr">${mm.m}/${mm.total}</span></div><div class="mbar"><span style="width:${mm.pct}%"></span></div></div>`;}).join("");
+  return `<div style="margin-top:20px"><div class="prog-sub">Co už umíš <span class="pmono">(výroky zvládnuté v opakování — box ≥ 4)</span></div><div class="mastgrid">${cells}</div></div>`;
 }
 
 /* ---------- PŘEHLED POKROKU & SLABIN ---------- */
@@ -1193,7 +1419,7 @@ function progressSection(){
     :`<div><div class="prog-sub">Poslední zkoušky nanečisto</div><p class="block-note">Zatím žádná — zkus zkoušku nanečisto.</p></div>`;
   return `<h3 class="section-h">Tvůj pokrok</h3>
    <p class="block-note" style="margin-bottom:14px">K procvičení: <b>${wrongN}</b> chybných · <b>${starN}</b> označených. <button class="linkbtn" onclick="resetProgress()">Vymazat pokrok</button></p>
-   <div class="prog2">${weak}${hist}</div>`;
+   <div class="prog2">${weak}${hist}</div>${masterySection()}`;
 }
 
 /* ---------- PLÁN ---------- */
@@ -1216,6 +1442,7 @@ function renderPlan(){
      </div>
      <div class="heroplane">${heroPlane()}</div>
    </div>
+   ${dailyHero()}
    <div class="statbar mt-l">${stats.map(([n,k])=>`<div class="stat"><div class="n${n[0]==='o'?' o':''}">${n[0]==='o'?n.slice(1):n}</div><div class="k">${k}</div></div>`).join("")}</div>
    ${progressSection()}
    <h3 class="section-h">Jak je test postavený</h3>
@@ -1264,9 +1491,17 @@ function trenerModes(){
   const items=allItems();
   const wrongN=items.filter(it=>STORE.wrong[it.sid]).length;
   const starN=items.filter(it=>STORE.starred[it.sid]).length;
+  const dueN=dailyQueue().length;
   byId("s-trenazer").innerHTML=`
    <p class="eyebrow">Jádro nástroje</p><h2 class="h-title">Trenažér ANO/NE</h2>
-   <p class="lede">Trénuješ přesně formát zkoušky: u každého výroku rozhodneš ANO/NE a hned vidíš, jak to je a <b>proč</b>. Vyber si téma (po blocích jako u zkoušky), nebo zamíchanou rychlovku.</p>
+   <p class="lede">Trénuješ přesně formát zkoušky: u každého výroku rozhodneš ANO/NE a hned vidíš, jak to je a <b>proč</b>. Nejúčinnější je <b>Učení</b> (chytré opakování), nebo si vyber téma po blocích či rychlovku.</p>
+   <h3 class="section-h">Doporučeno — učení (chytré opakování)</h3>
+   <div class="tr-intro">
+     <button class="modecard" style="border-color:var(--orange-line)" onclick="trStartLearn()">
+       <div class="mtag"><span class="tag p1">SRS</span><span class="mono pmono">${dueN} ${cardWord(dueN)} dnes</span></div>
+       <h4>Učení — dnešní dávka</h4><p>Leitnerův systém ti sám vybere, co dnes zopakovat (prošlé termíny + pár nových, promíchané napříč okruhy). Nejefektivnější cesta, jak si látku udržet.</p>
+       <div class="mgo">${dueN?"Spustit →":"Pro dnešek hotovo 🎉"}</div></button>
+   </div>
    <h3 class="section-h">Po blocích — vyber téma</h3>
    <div class="chiprow">${chips}</div>
    <h3 class="section-h">Rychlovka a cílené procvičování</h3>
@@ -1385,7 +1620,8 @@ function trRapid(){
        <button class="tf yes" id="tf-0-y" onclick="trPickRapid(true)">ANO</button>
        <button class="tf no" id="tf-0-n" onclick="trPickRapid(false)">NE</button></div>
      <div class="why" id="why-0"></div></div>
-   <div class="qactions"><button class="btn" id="tr-next" onclick="trNextRapid()" style="display:none">${last?"Zobrazit výsledek →":"Další →"}</button><span class="spacer"></span></div>`;
+   <div class="qactions"><button class="btn" id="tr-next" onclick="trNextRapid()" style="display:none">${last?"Zobrazit výsledek →":"Další →"}</button><span class="spacer"></span></div>
+   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ · <kbd>Enter</kbd> další</div>`;
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function trPickRapid(val){
@@ -1406,6 +1642,97 @@ function trNextRapid(){
   else byId("s-trenazer").innerHTML=`
    <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button><b style="font-size:14px">${TR.label||"Rychlovka"}</b></div>
    ${scoreResult(TR.correct,TR.list.length,TR.retry||"trStartRapid()","trenerModes()")}`;
+}
+
+/* --- režim UČENÍ (chytré opakování / Leitner) --- */
+function trStartLearn(){
+  ensureDaily();
+  const q=dailyQueue();
+  if(!q.length){trEmpty("Pro dnešek hotovo 🎉","Žádné výroky nejsou po termínu opakování. Pochval se a vrať se zítra na další dávku — nebo si dej rychlovku či zkoušku nanečisto.");return;}
+  TR={kind:"learn",queue:[...q],total:q.length,byId:{},firstTry:{},resolved:{},wrong:{},lastOk:false,checked:false,cur:null};
+  q.forEach(it=>TR.byId[it.sid]=it);
+  show("trenazer");trLearn();
+}
+function trLearn(){
+  if(!TR.queue.length){trLearnSummary();return;}
+  const it=TR.queue[0];TR.cur=it;TR.checked=false;
+  const total=TR.total,doneU=Object.keys(TR.resolved).length;
+  const s=STORE.srs[it.sid];
+  const badge=s?("box "+s.box+" / 5"):"nová karta";
+  byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button>
+     <span class="tag" style="background:var(--navy);color:#fff;border-color:var(--navy)">${titleOf(it.topic)}</span>
+     <span class="boxbadge">${badge}</span></div>
+   <div class="qprog"><div class="bar"><div class="fill" style="width:${total?doneU/total*100:0}%"></div></div><div class="ct">${doneU} / ${total} hotovo</div></div>
+   <div class="block-note">${it.stem}</div>
+   <div class="stmt" id="stmt-0">
+     <div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
+     <div class="tfbtns">
+       <button class="tf yes" id="tf-0-y" onclick="trPickLearn(true)">ANO</button>
+       <button class="tf no" id="tf-0-n" onclick="trPickLearn(false)">NE</button></div>
+     <div class="why" id="why-0"></div></div>
+   <div class="qactions"><button class="btn" id="tr-next" onclick="trNextLearn()" style="display:none">Další →</button><span class="spacer"></span></div>
+   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ · <kbd>Enter</kbd> další</div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function trPickLearn(val){
+  if(TR.checked)return;TR.checked=true;
+  const it=TR.cur,ok=val===it.a;TR.lastOk=ok;
+  const y=byId("tf-0-y"),no=byId("tf-0-n");y.disabled=no.disabled=true;
+  (it.a?y:no).classList.add("correct");
+  if(!ok)(val?y:no).classList.add("wrong");
+  byId("stmt-0").classList.add(ok?"ok":"bad");
+  const why=byId("why-0");why.className="why show";
+  why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
+  if(TR.firstTry[it.sid]===undefined)TR.firstTry[it.sid]=ok;   /* skóre sezení = první pokus */
+  if(!ok)TR.wrong[it.sid]=it;
+  srsReview(it.sid,ok);recordAnswer(it.topic,it.sid,ok);saveStore();
+  byId("tr-next").style.display="";
+}
+function trNextLearn(){
+  const it=TR.queue.shift();
+  if(TR.lastOk){TR.resolved[it.sid]=1;}
+  else{delete TR.resolved[it.sid];TR.queue.splice(Math.min(3,TR.queue.length),0,it);}  /* box1 → znovu brzy v tomto sezení */
+  trLearn();
+}
+function trLearnSummary(){
+  const sids=Object.keys(TR.firstTry);
+  const total=sids.length,correct=sids.filter(s=>TR.firstTry[s]).length;
+  const wrongSids=sids.filter(s=>!TR.firstTry[s]);
+  ERR_SIDS=wrongSids;
+  const byTopic={};
+  sids.forEach(s=>{const it=TR.byId[s],o=(byTopic[it.topic]=byTopic[it.topic]||{c:0,n:0});o.n++;if(TR.firstTry[s])o.c++;});
+  const extra=sessionExtra(byTopic,wrongSids.map(s=>TR.byId[s]),"Trénink dokončen na první pokus");
+  byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button><b style="font-size:14px">Učení — souhrn sezení</b></div>
+   ${scoreResult(correct,total,"trStartLearn()","trenerModes()",extra)}`;
+}
+
+/* --- souhrn sezení (sdílí zkouška i učení) --- */
+let ERR_SIDS=[];
+function breakdownRows(byTopic){
+  const rows=Object.keys(byTopic).map(tp=>{const o=byTopic[tp],pct=o.n?Math.round(o.c/o.n*100):0;return {tp,o,pct};}).sort((a,b)=>a.pct-b.pct);
+  if(!rows.length)return "";
+  return `<div class="prog-sub" style="margin-top:20px">Podle okruhů</div><div class="proglist">${rows.map(r=>`<div class="progrow"><span class="pname">${titleOf(r.tp)}</span><span class="pmono">${r.o.c}/${r.o.n}</span><span class="scorepill ${pctClass(r.pct)}">${r.pct} %</span></div>`).join("")}</div>`;
+}
+function wrongReviewList(items){
+  if(!items.length)return `<div class="kp" style="margin-top:18px"><div class="kph">Bez chyb 🎉</div><div>Všechno správně. Paráda — tohle už máš v ruce.</div></div>`;
+  return `<div class="prog-sub" style="margin-top:20px">Co bylo špatně</div>${items.map(it=>`<div class="stmt bad"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div><div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}</div></div>`).join("")}`;
+}
+function sessionExtra(byTopic,wrongItems,note){
+  const practice=wrongItems.length?`<div class="qactions" style="justify-content:center;margin-top:16px"><button class="btn orange" onclick="practiceErrors(ERR_SIDS)">Procvičit tyto chyby (${wrongItems.length}) →</button></div>`:"";
+  return `<div class="brkwrap" style="margin-top:24px">
+    ${note?`<div class="block-note" style="text-align:center;margin-bottom:6px">${note}</div>`:""}
+    ${breakdownRows(byTopic)}
+    ${practice}
+    ${wrongReviewList(wrongItems)}</div>`;
+}
+function practiceErrors(sids){
+  ERR_SIDS=sids||[];const set={};ERR_SIDS.forEach(s=>set[s]=1);
+  const list=allItems().filter(it=>set[it.sid]);
+  if(!list.length){trenerModes();return;}
+  TR={kind:"errfix",list:shuffle(list),ri:0,correct:0,checked:false,label:"Oprava chyb",retry:"practiceErrors(ERR_SIDS)"};
+  show("trenazer");trRapid();
 }
 
 /* ---------- ZKOUŠKA NANEČISTO ---------- */
@@ -1448,7 +1775,8 @@ function exRender(){
      <div class="tfbtns">
        <button class="tf yes" onclick="exAns(true)">ANO</button>
        <button class="tf no" onclick="exAns(false)">NE</button></div></div>
-   <p class="block-note" style="margin-top:14px">Vyber ANO/NE — automaticky přejdeš na další. Vyhodnocení až na konci.</p>`;
+   <p class="block-note" style="margin-top:14px">Vyber ANO/NE — automaticky přejdeš na další. Vyhodnocení až na konci.</p>
+   <div class="keyhint"><kbd>A</kbd> ANO · <kbd>N</kbd> NE · <kbd>S</kbd> ★ označit</div>`;
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function exAns(val){
@@ -1467,14 +1795,21 @@ function exFinish(){
   });
   STORE.exams=[{d:Date.now(),pct:EX.list.length?Math.round(correct/EX.list.length*100):0,n:EX.list.length,correct},...(STORE.exams||[])].slice(0,12);
   saveStore();
+  const byTopic={};
+  EX.list.forEach((it,k)=>{const o=(byTopic[it.topic]=byTopic[it.topic]||{c:0,n:0});o.n++;if(EX.answers[k]===it.a)o.c++;});
+  const wrongItems=EX.list.filter((it,k)=>EX.answers[k]!==it.a);
+  ERR_SIDS=wrongItems.map(it=>it.sid);
+  const practice=wrongItems.length?`<div class="qactions" style="justify-content:center;margin-top:16px"><button class="btn orange" onclick="practiceErrors(ERR_SIDS)">Procvičit tyto chyby (${wrongItems.length}) →</button></div>`:"";
   const review=EX.list.map((it,k)=>{
     const u=EX.answers[k],ok=u===it.a,utxt=u===null?"—":(u?"ANO":"NE");
     return `<div class="stmt ${ok?"ok":"bad"}"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
       <div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span><b>Tvoje: ${utxt}</b> — ${it.why}</div></div>`;
   }).join("");
-  const extra=`<div style="text-align:left;margin-top:26px">
-     <div class="block-note" style="text-align:center;margin-bottom:14px">Čas: <b>${t}</b></div>
-     <h3 class="section-h" style="margin-top:6px">Rozbor — co bylo jak</h3>${review}</div>`;
+  const extra=`<div class="brkwrap" style="margin-top:26px">
+     <div class="block-note" style="text-align:center;margin-bottom:6px">Čas: <b>${t}</b></div>
+     ${breakdownRows(byTopic)}
+     ${practice}
+     <h3 class="section-h" style="margin-top:18px">Rozbor — co bylo jak</h3>${review}</div>`;
   byId("s-zkouska").innerHTML=`
    <div class="backbar"><button class="btn ghost sm" onclick="zkouskaIntro()">← Zpět</button><b style="font-size:14px">Výsledek zkoušky</b></div>
    ${scoreResult(correct,EX.list.length,`exStart(${EX.n})`,"zkouskaIntro()",extra)}`;
@@ -1502,18 +1837,31 @@ function prehledRender(){
 
 /* ---------- KLÁVESOVÉ ZKRATKY (desktop) ---------- */
 /* A = ANO, N = NE, Enter/mezerník = další/zkontrolovat. Na mobilu (bez klávesnice) se nic neděje. */
+function starCurrent(){
+  let sid=null;
+  if(CUR==="zkouska"&&EX&&EX.list&&byId("ex-clock"))sid=EX.list[EX.i].sid;
+  else if(CUR==="trenazer"&&TR){
+    if(TR.kind==="learn"&&TR.cur)sid=TR.cur.sid;
+    else if(TR.list&&TR.list[TR.ri])sid=TR.list[TR.ri].sid;
+  }
+  if(sid==null)return;
+  toggleStar(sid,document.querySelector("#stmt-0 .starbtn"));
+}
 function onKey(e){
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   const tag=(e.target&&e.target.tagName)||"";
   if(tag==="INPUT"||tag==="TEXTAREA")return;
   const k=e.key;
+  const help=byId("helpModal");
+  if(help&&help.classList.contains("on")){if(k==="Escape")toggleHelp(false);return;}
   /* zkouška nanečisto — jen v běžícím testu (ne na výsledku) */
   if(CUR==="zkouska"&&EX&&EX.list&&byId("ex-clock")){
-    if(k==="a"||k==="A"){e.preventDefault();exAns(true);}
+    if(k==="s"||k==="S"){e.preventDefault();starCurrent();}
+    else if(k==="a"||k==="A"){e.preventDefault();exAns(true);}
     else if(k==="n"||k==="N"){e.preventDefault();exAns(false);}
     return;
   }
-  if(CUR==="trenazer"&&TR&&TR.list){
+  if(CUR==="trenazer"&&TR){
     if(TR.kind==="block"){
       if(k==="Enter"){
         if(!TR.checked&&byId("tr-check")){e.preventDefault();trCheckBlock();}
@@ -1521,8 +1869,18 @@ function onKey(e){
       }
       return;
     }
-    /* rychlovka / jen chybné / označené */
-    if(!byId("tf-0-y"))return;
+    if(TR.kind==="learn"){
+      if(!byId("tf-0-y"))return;
+      if(k==="s"||k==="S"){e.preventDefault();starCurrent();return;}
+      if(!TR.checked){
+        if(k==="a"||k==="A"){e.preventDefault();trPickLearn(true);}
+        else if(k==="n"||k==="N"){e.preventDefault();trPickLearn(false);}
+      }else if(k==="Enter"||k===" "){if(byId("tr-next")){e.preventDefault();trNextLearn();}}
+      return;
+    }
+    /* rychlovka / jen chybné / označené / oprava chyb */
+    if(!TR.list||!byId("tf-0-y"))return;
+    if(k==="s"||k==="S"){e.preventDefault();starCurrent();return;}
     if(!TR.checked){
       if(k==="a"||k==="A"){e.preventDefault();trPickRapid(true);}
       else if(k==="n"||k==="N"){e.preventDefault();trPickRapid(false);}
@@ -1534,6 +1892,7 @@ function onKey(e){
 document.addEventListener("keydown",onKey);
 
 /* ---------- INIT ---------- */
+ensureDaily();saveStore();applyTheme(curTheme());
 buildNav();renderPlan();okruhyGrid();trenerModes();zkouskaIntro();prehledRender();show("plan");
 </script>
 <script>
