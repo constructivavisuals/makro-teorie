@@ -7,6 +7,8 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0E1619">
 <link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -279,6 +281,29 @@ a{color:var(--orange-d)}
   .heroplane{order:-1}
   .statbar{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ---------- pokrok & hvězda (přidané UI) ---------- */
+.stmt-head{display:flex;align-items:flex-start;gap:12px}
+.stmt-head .stmt-t{flex:1}
+.starbtn{flex:0 0 auto;background:transparent;border:0;padding:2px;margin:-2px -4px 0 0;color:var(--ink-3);line-height:0;border-radius:7px;transition:color .14s,transform .12s}
+.starbtn:hover{color:var(--orange);transform:scale(1.08)}
+.starbtn.on{color:var(--orange)}
+.starbtn.on svg{fill:var(--orange)}
+.starbtn svg{width:19px;height:19px;display:block}
+.pmono{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-3);font-weight:400}
+.prog2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.prog-sub{font-family:"Space Grotesk";font-size:15px;font-weight:600;color:var(--ink);margin:0 0 8px;letter-spacing:-.01em}
+.proglist{display:flex;flex-direction:column;gap:8px}
+.progrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:11px 15px;box-shadow:var(--shadow)}
+.progrow .pname{flex:1;font-size:14px;color:var(--ink);font-weight:500;line-height:1.3}
+.progrow .pmono{white-space:nowrap}
+.scorepill{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid transparent;letter-spacing:.02em;white-space:nowrap}
+.scorepill.g{background:var(--green-soft);color:var(--green-d);border-color:var(--green-line)}
+.scorepill.a{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line)}
+.scorepill.r{background:var(--red-soft);color:var(--red-d);border-color:var(--red-line)}
+.linkbtn{background:none;border:0;color:var(--ink-3);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.03em;text-decoration:underline;text-underline-offset:2px;padding:2px;cursor:pointer}
+.linkbtn:hover{color:var(--red-d)}
+@media (max-width:860px){.prog2{grid-template-columns:1fr;gap:18px}}
 </style>
 </head>
 <body>
@@ -318,6 +343,43 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const byId=id=>document.getElementById(id);
 const titleOf=tt=>{const t=TOPICS.find(x=>x.id===tt);return t?t.title:tt;};
 
+/* ============================================================
+   POKROK — ukládání do localStorage (ošetřeno try/catch)
+============================================================ */
+let CUR="plan";
+const LS_KEY="makro2_progress_v1";
+/* stabilní id výroku z topic+text (FNV-1a) → přežije doplnění banky */
+function hashStr(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
+function sidOf(topic,t){return hashStr(topic+"::"+t);}
+function loadStore(){
+  try{
+    const o=JSON.parse(localStorage.getItem(LS_KEY)||"null")||{};
+    return {v:1,exams:Array.isArray(o.exams)?o.exams:[],topics:o.topics||{},wrong:o.wrong||{},starred:o.starred||{}};
+  }catch(e){return {v:1,exams:[],topics:{},wrong:{},starred:{}};}
+}
+let STORE=loadStore();
+function saveStore(){try{localStorage.setItem(LS_KEY,JSON.stringify(STORE));}catch(e){}}
+function recordAnswer(topic,sid,ok){
+  if(!STORE.topics[topic])STORE.topics[topic]={correct:0,total:0};
+  STORE.topics[topic].total++;if(ok)STORE.topics[topic].correct++;
+  if(ok)delete STORE.wrong[sid];else STORE.wrong[sid]=1;
+}
+function isStarred(sid){return !!STORE.starred[sid];}
+function toggleStar(sid,el){
+  if(STORE.starred[sid])delete STORE.starred[sid];else STORE.starred[sid]=1;
+  saveStore();
+  if(el)el.classList.toggle("on",!!STORE.starred[sid]);
+}
+function resetProgress(){
+  if(!confirm("Opravdu vymazat veškerý uložený pokrok (statistiky, historii zkoušek, chybné i označené výroky)? Akci nelze vrátit."))return;
+  STORE={v:1,exams:[],topics:{},wrong:{},starred:{}};
+  saveStore();renderPlan();
+}
+const STAR_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.2l2.6 5.55 6.05.7-4.45 4.13 1.18 5.97L12 17.7 6.62 19.55 7.8 13.58 3.35 9.45l6.05-.7z"/></svg>';
+function starBtn(sid){return `<button class="starbtn${isStarred(sid)?" on":""}" type="button" onclick="toggleStar('${sid}',this)" aria-label="Označit výrok jako záludný" title="Označit jako záludný">${STAR_SVG}</button>`;}
+function pctClass(p){return p>=70?"g":(p>=50?"a":"r");}
+function fmtDate(ms){try{const d=new Date(ms);return d.toLocaleDateString("cs-CZ",{day:"numeric",month:"numeric"})+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}catch(e){return "";}}
+
 const COICON={
  pozor:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
  intuice:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6m-5 3h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -339,6 +401,9 @@ function show(id){
   $$(".screen").forEach(s=>s.classList.remove("on"));
   byId("s-"+id).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.id===id));
+  CUR=id;
+  if(id==="plan")renderPlan();
+  else if(id==="trenazer")trenerModes();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -1084,7 +1149,7 @@ const BLOCKS=[
 
 /* ---------- pomocné ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function allItems(){return BLOCKS.flatMap(b=>b.items.map(it=>({...it,stem:b.stem,topic:b.topic})));}
+function allItems(){return BLOCKS.flatMap(b=>b.items.map(it=>({...it,stem:b.stem,topic:b.topic,sid:sidOf(b.topic,it.t)})));}
 const TOTAL_ITEMS=allItems().length;
 function donutSVG(pct,color){
   const r=54,c=2*Math.PI*r,off=c*(1-pct/100);
@@ -1108,6 +1173,29 @@ function scoreResult(correct,total,onRetry,onBack,extra){
       <button class="btn ghost" onclick="${onBack}">Zpět</button></div></div>`;
 }
 
+/* ---------- PŘEHLED POKROKU & SLABIN ---------- */
+function progressSection(){
+  const items=allItems();
+  const tstats=TOPICS.map(t=>{const s=STORE.topics[t.id];return (s&&s.total)?{t,pct:Math.round(s.correct/s.total*100),c:s.correct,n:s.total}:null;}).filter(Boolean).sort((a,b)=>a.pct-b.pct);
+  const exams=(STORE.exams||[]).slice(0,6);
+  const wrongN=items.filter(it=>STORE.wrong[it.sid]).length;
+  const starN=items.filter(it=>STORE.starred[it.sid]).length;
+  if(!tstats.length&&!exams.length)
+    return `<h3 class="section-h">Tvůj pokrok</h3>
+     <div class="kp"><div class="kph">Zatím prázdno</div><div>Pusť <b>trenažér</b> nebo <b>zkoušku nanečisto</b> — tady se ti pak ukáže úspěšnost po jednotlivých okruzích a historie zkoušek. Pokrok se ukládá ve tvém prohlížeči.</div></div>`;
+  const weak=tstats.length
+    ?`<div><div class="prog-sub">Úspěšnost po okruzích <span class="pmono">(nejslabší nahoře)</span></div>
+       <div class="proglist">${tstats.map(o=>`<div class="progrow"><span class="pname">${o.t.title}</span><span class="pmono">${o.c}/${o.n}</span><span class="scorepill ${pctClass(o.pct)}">${o.pct} %</span></div>`).join("")}</div></div>`
+    :`<div><div class="prog-sub">Úspěšnost po okruzích</div><p class="block-note">Zatím bez dat — pusť trenažér po blocích.</p></div>`;
+  const hist=exams.length
+    ?`<div><div class="prog-sub">Poslední zkoušky nanečisto</div>
+       <div class="proglist">${exams.map(e=>`<div class="progrow"><span class="pname">${e.n} tvrzení</span><span class="pmono">${fmtDate(e.d)}</span><span class="scorepill ${pctClass(e.pct)}">${e.pct} %</span></div>`).join("")}</div></div>`
+    :`<div><div class="prog-sub">Poslední zkoušky nanečisto</div><p class="block-note">Zatím žádná — zkus zkoušku nanečisto.</p></div>`;
+  return `<h3 class="section-h">Tvůj pokrok</h3>
+   <p class="block-note" style="margin-bottom:14px">K procvičení: <b>${wrongN}</b> chybných · <b>${starN}</b> označených. <button class="linkbtn" onclick="resetProgress()">Vymazat pokrok</button></p>
+   <div class="prog2">${weak}${hist}</div>`;
+}
+
 /* ---------- PLÁN ---------- */
 function renderPlan(){
   const stats=[[String(TOPICS.length),"okruhů teorie"],["o"+BLOCKS.length,"bloků otázek"],[String(TOTAL_ITEMS),"tvrzení ANO/NE"],["48","u zkoušky"]];
@@ -1129,6 +1217,7 @@ function renderPlan(){
      <div class="heroplane">${heroPlane()}</div>
    </div>
    <div class="statbar mt-l">${stats.map(([n,k])=>`<div class="stat"><div class="n${n[0]==='o'?' o':''}">${n[0]==='o'?n.slice(1):n}</div><div class="k">${k}</div></div>`).join("")}</div>
+   ${progressSection()}
    <h3 class="section-h">Jak je test postavený</h3>
    <div class="kp"><div class="kph">Formát ANO/NE</div><div>Otázka má hlavičku (téma nebo tvrzení, např. „V modelu produkt-výdaje platí, že:“) a pod ní několik výroků. U <b>každého výroku zvlášť</b> volíš ANO nebo NE. Žádné A–D, žádné vzorce, žádné dosazování.</div></div>
    <div class="kp"><div class="kph">Na čem se chybuje</div><div>Nepravdivé výroky stojí skoro vždy na čtyřech věcech: absolutní slova („vždy/nikdy“), <b>prohozený směr</b> vztahu (doprava × doleva, roste × klesá), <b>záměna dvou modelů/pojmů</b> (krátké × dlouhé období, fixní × flexibilní kurz) a přehozené přiřazení (co je co).</div></div>
@@ -1172,17 +1261,29 @@ function trenerModes(){
   const withBlocks=TOPICS.filter(t=>BLOCKS.some(b=>b.topic===t.id));
   const chips=`<button class="chip" onclick="trStartBlocks('all')">Vše (${BLOCKS.length})</button>`+
     withBlocks.map(t=>{const n=BLOCKS.filter(b=>b.topic===t.id).length;return `<button class="chip" onclick="trStartBlocks('${t.id}')">${t.title} (${n})</button>`;}).join("");
+  const items=allItems();
+  const wrongN=items.filter(it=>STORE.wrong[it.sid]).length;
+  const starN=items.filter(it=>STORE.starred[it.sid]).length;
   byId("s-trenazer").innerHTML=`
    <p class="eyebrow">Jádro nástroje</p><h2 class="h-title">Trenažér ANO/NE</h2>
    <p class="lede">Trénuješ přesně formát zkoušky: u každého výroku rozhodneš ANO/NE a hned vidíš, jak to je a <b>proč</b>. Vyber si téma (po blocích jako u zkoušky), nebo zamíchanou rychlovku.</p>
    <h3 class="section-h">Po blocích — vyber téma</h3>
    <div class="chiprow">${chips}</div>
-   <h3 class="section-h">Nebo rychlovka</h3>
+   <h3 class="section-h">Rychlovka a cílené procvičování</h3>
    <div class="tr-intro">
      <button class="modecard" onclick="trStartRapid()">
        <div class="mtag"><span class="tag p2">mix</span></div>
        <h4>Rychlá tvrzení</h4><p>${TOTAL_ITEMS} zamíchaných tvrzení ze všech okruhů, jedno po druhém s okamžitou zpětnou vazbou.</p>
-       <div class="mgo">Spustit →</div></button></div>`;
+       <div class="mgo">Spustit →</div></button>
+     <button class="modecard" onclick="trStartWrong()">
+       <div class="mtag"><span class="tag p1">chyby</span><span class="mono pmono">${wrongN}</span></div>
+       <h4>Jen chybné</h4><p>Přezkouší výroky, které jsi dřív zodpověděl špatně. Jakmile odpovíš správně, výrok se z chybných odebere.</p>
+       <div class="mgo">${wrongN?"Spustit →":"Zatím prázdné"}</div></button>
+     <button class="modecard" onclick="trStartStarred()">
+       <div class="mtag"><span class="tag p2">★ označené</span><span class="mono pmono">${starN}</span></div>
+       <h4>Procvičit označené</h4><p>Výroky, které sis u procvičování označil hvězdičkou jako záludné. Procvič si přesně to, co tě nejvíc trápí.</p>
+       <div class="mgo">${starN?"Spustit →":"Zatím prázdné"}</div></button>
+   </div>`;
 }
 
 /* --- režim PO BLOCÍCH --- */
@@ -1196,7 +1297,7 @@ function trBlock(){
   TR.ans={};TR.checked=false;
   const rows=b.items.map((it,i)=>`
     <div class="stmt" id="stmt-${i}">
-      <div class="stmt-t">${it.t}</div>
+      <div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(sidOf(b.topic,it.t))}</div>
       <div class="tfbtns">
         <button class="tf yes" id="tf-${i}-y" onclick="trPick(${i},true)">ANO</button>
         <button class="tf no" id="tf-${i}-n" onclick="trPick(${i},false)">NE</button></div>
@@ -1230,10 +1331,12 @@ function trCheckBlock(){
     if(user!==undefined&&user!==it.a)(user?y:no).classList.add("wrong");
     if(user===undefined){y.classList.add("muted");no.classList.add("muted");(it.a?y:no).classList.remove("muted");}
     const ok=user===it.a;if(ok)TR.correct++;TR.total++;
+    if(user!==undefined)recordAnswer(b.topic,sidOf(b.topic,it.t),ok);
     byId("stmt-"+i).classList.add(ok?"ok":"bad");
     const why=byId("why-"+i);why.className="why show";
     why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
   });
+  saveStore();
   TR.checked=true;
   byId("tr-check").style.display="none";byId("tr-next").style.display="";
 }
@@ -1244,21 +1347,40 @@ function trNextBlock(){
    ${scoreResult(TR.correct,TR.total,`trStartBlocks('${TR.filter}')`,"trenerModes()")}`;
 }
 
-/* --- režim RYCHLOVKA --- */
+/* --- režim RYCHLOVKA (+ jen chybné / označené) --- */
 function trStartRapid(){
-  TR={kind:"rapid",list:shuffle(allItems()),ri:0,correct:0,checked:false};
+  TR={kind:"rapid",list:shuffle(allItems()),ri:0,correct:0,checked:false,label:"Rychlovka",retry:"trStartRapid()"};
   show("trenazer");trRapid();
+}
+function trStartWrong(){
+  const list=allItems().filter(it=>STORE.wrong[it.sid]);
+  if(!list.length){trEmpty("Žádné chybné výroky 🎉","Zatím jsi nic nezodpověděl špatně — nebo jsi všechny chyby už opravil. Pusť rychlovku nebo zkoušku a chybné výroky se sem začnou ukládat.");return;}
+  TR={kind:"wrong",list:shuffle(list),ri:0,correct:0,checked:false,label:"Jen chybné",retry:"trStartWrong()"};
+  show("trenazer");trRapid();
+}
+function trStartStarred(){
+  const list=allItems().filter(it=>STORE.starred[it.sid]);
+  if(!list.length){trEmpty("Žádné označené výroky","Klikni na hvězdičku ☆ u libovolného výroku v trenažéru a označíš si ho jako záludný. Pak ho tady procvičíš.");return;}
+  TR={kind:"starred",list:shuffle(list),ri:0,correct:0,checked:false,label:"Označené",retry:"trStartStarred()"};
+  show("trenazer");trRapid();
+}
+function trEmpty(title,msg){
+  show("trenazer");
+  byId("s-trenazer").innerHTML=`
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button></div>
+   <h2 class="h-title">${title}</h2><p class="lede">${msg}</p>
+   <div class="qactions mt"><button class="btn ghost" onclick="trenerModes()">← Zpět na výběr</button></div>`;
 }
 function trRapid(){
   const it=TR.list[TR.ri],n=TR.list.length,last=TR.ri===n-1;
   TR.checked=false;
   byId("s-trenazer").innerHTML=`
    <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button>
-     <span class="tag" style="background:var(--navy);color:#fff;border-color:var(--navy)">${titleOf(it.topic)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3)">rychlovka</span></div>
+     <span class="tag" style="background:var(--navy);color:#fff;border-color:var(--navy)">${titleOf(it.topic)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3)">${TR.label||"rychlovka"}</span></div>
    <div class="qprog"><div class="bar"><div class="fill" style="width:${TR.ri/n*100}%"></div></div><div class="ct">${TR.ri+1} / ${n}</div></div>
    <div class="block-note">${it.stem}</div>
    <div class="stmt" id="stmt-0">
-     <div class="stmt-t">${it.t}</div>
+     <div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
      <div class="tfbtns">
        <button class="tf yes" id="tf-0-y" onclick="trPickRapid(true)">ANO</button>
        <button class="tf no" id="tf-0-n" onclick="trPickRapid(false)">NE</button></div>
@@ -1273,6 +1395,7 @@ function trPickRapid(val){
   (it.a?y:no).classList.add("correct");
   if(val!==it.a)(val?y:no).classList.add("wrong");
   const ok=val===it.a;if(ok)TR.correct++;
+  recordAnswer(it.topic,it.sid,ok);saveStore();
   byId("stmt-0").classList.add(ok?"ok":"bad");
   const why=byId("why-0");why.className="why show";
   why.innerHTML=`<span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span>${it.why}`;
@@ -1281,8 +1404,8 @@ function trPickRapid(val){
 function trNextRapid(){
   if(TR.ri<TR.list.length-1){TR.ri++;trRapid();}
   else byId("s-trenazer").innerHTML=`
-   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button><b style="font-size:14px">Rychlovka</b></div>
-   ${scoreResult(TR.correct,TR.list.length,"trStartRapid()","trenerModes()")}`;
+   <div class="backbar"><button class="btn ghost sm" onclick="trenerModes()">← Výběr</button><b style="font-size:14px">${TR.label||"Rychlovka"}</b></div>
+   ${scoreResult(TR.correct,TR.list.length,TR.retry||"trStartRapid()","trenerModes()")}`;
 }
 
 /* ---------- ZKOUŠKA NANEČISTO ---------- */
@@ -1321,7 +1444,7 @@ function exRender(){
      <button class="btn ghost sm" onclick="exQuit()">Ukončit</button></div>
    <div class="qprog"><div class="bar"><div class="fill" style="width:${EX.i/n*100}%"></div></div><div class="ct">${Math.round(EX.i/n*100)}&nbsp;%</div></div>
    <div class="block-note">${it.stem}</div>
-   <div class="stmt" id="stmt-0"><div class="stmt-t">${it.t}</div>
+   <div class="stmt" id="stmt-0"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
      <div class="tfbtns">
        <button class="tf yes" onclick="exAns(true)">ANO</button>
        <button class="tf no" onclick="exAns(false)">NE</button></div></div>
@@ -1337,10 +1460,16 @@ function exFinish(){
   if(EX.timer)clearInterval(EX.timer);
   const t=fmtTime(Date.now()-EX.startMs);
   let correct=0;
-  EX.list.forEach((it,k)=>{if(EX.answers[k]===it.a)correct++;});
+  EX.list.forEach((it,k)=>{
+    const u=EX.answers[k];
+    if(u===it.a)correct++;
+    if(u!==null)recordAnswer(it.topic,it.sid,u===it.a);
+  });
+  STORE.exams=[{d:Date.now(),pct:EX.list.length?Math.round(correct/EX.list.length*100):0,n:EX.list.length,correct},...(STORE.exams||[])].slice(0,12);
+  saveStore();
   const review=EX.list.map((it,k)=>{
     const u=EX.answers[k],ok=u===it.a,utxt=u===null?"—":(u?"ANO":"NE");
-    return `<div class="stmt ${ok?"ok":"bad"}"><div class="stmt-t">${it.t}</div>
+    return `<div class="stmt ${ok?"ok":"bad"}"><div class="stmt-head"><div class="stmt-t">${it.t}</div>${starBtn(it.sid)}</div>
       <div class="why show"><span class="badge ${it.a?"y":"n"}">${it.a?"ANO":"NE"}</span><b>Tvoje: ${utxt}</b> — ${it.why}</div></div>`;
   }).join("");
   const extra=`<div style="text-align:left;margin-top:26px">
@@ -1370,6 +1499,39 @@ function prehledRender(){
    <h3 class="section-h">Pasti podle okruhů</h3>
    <div class="grid">${cards}</div>`;
 }
+
+/* ---------- KLÁVESOVÉ ZKRATKY (desktop) ---------- */
+/* A = ANO, N = NE, Enter/mezerník = další/zkontrolovat. Na mobilu (bez klávesnice) se nic neděje. */
+function onKey(e){
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const tag=(e.target&&e.target.tagName)||"";
+  if(tag==="INPUT"||tag==="TEXTAREA")return;
+  const k=e.key;
+  /* zkouška nanečisto — jen v běžícím testu (ne na výsledku) */
+  if(CUR==="zkouska"&&EX&&EX.list&&byId("ex-clock")){
+    if(k==="a"||k==="A"){e.preventDefault();exAns(true);}
+    else if(k==="n"||k==="N"){e.preventDefault();exAns(false);}
+    return;
+  }
+  if(CUR==="trenazer"&&TR&&TR.list){
+    if(TR.kind==="block"){
+      if(k==="Enter"){
+        if(!TR.checked&&byId("tr-check")){e.preventDefault();trCheckBlock();}
+        else if(TR.checked&&byId("tr-next")){e.preventDefault();trNextBlock();}
+      }
+      return;
+    }
+    /* rychlovka / jen chybné / označené */
+    if(!byId("tf-0-y"))return;
+    if(!TR.checked){
+      if(k==="a"||k==="A"){e.preventDefault();trPickRapid(true);}
+      else if(k==="n"||k==="N"){e.preventDefault();trPickRapid(false);}
+    }else if(k==="Enter"||k===" "){
+      if(byId("tr-next")){e.preventDefault();trNextRapid();}
+    }
+  }
+}
+document.addEventListener("keydown",onKey);
 
 /* ---------- INIT ---------- */
 buildNav();renderPlan();okruhyGrid();trenerModes();zkouskaIntro();prehledRender();show("plan");
